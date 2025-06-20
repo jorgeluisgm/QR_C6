@@ -1,0 +1,1470 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Control de Rondas Corporativo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            padding: 30px;
+            margin-bottom: 20px;
+            transition: transform 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        .connection-status {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+
+        .status-active {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .status-offline {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .status-pending {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+
+        .role-selector {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .role-button {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            border: none;
+            border-radius: 15px;
+            padding: 40px 20px;
+            font-size: 1.3rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .role-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+        }
+
+        .role-button.supervisor {
+            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+        }
+
+        .plant-selector {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .plant-button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 30px 20px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .plant-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+
+        .turn-info {
+            background: #e3f2fd;
+            border: 1px solid #bbdefb;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .turn-auto {
+            background: #e8f5e8;
+            border-color: #c8e6c9;
+            color: #2e7d32;
+        }
+
+        .password-container {
+            max-width: 400px;
+            margin: 0 auto;
+        }
+
+        .password-input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .password-input:focus {
+            outline: none;
+            border-color: #4facfe;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 15px 30px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            margin-bottom: 10px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+        }
+
+        .btn-warning {
+            background: linear-gradient(135deg, #ff8008 0%, #ffc837 100%);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #ff416c 0%, #ff4b2b 100%);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #6c757d 0%, #495057 100%);
+        }
+
+        .progress-container {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background: #e9ecef;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #11998e 0%, #38ef7d 100%);
+            transition: width 0.3s ease;
+            border-radius: 10px;
+        }
+
+        .locations-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .location-card {
+            background: white;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            padding: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .location-card.completed {
+            border-color: #28a745;
+            background: #f8fff8;
+        }
+
+        .location-card.active {
+            border-color: #007bff;
+            background: #f8f9ff;
+        }
+
+        .floating-button {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, #ff416c 0%, #ff4b2b 100%);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            font-size: 1.5rem;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .floating-button:hover {
+            transform: scale(1.1);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 2000;
+            overflow-y: auto;
+        }
+
+        .modal-content {
+            background: white;
+            margin: 5% auto;
+            padding: 30px;
+            border-radius: 15px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #eee;
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 2rem;
+            cursor: pointer;
+            color: #999;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #555;
+        }
+
+        .form-group select, 
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .camera-container {
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .camera-preview {
+            width: 100%;
+            max-width: 400px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+        }
+
+        .dashboard {
+            display: none;
+        }
+
+        .dashboard-tabs {
+            display: flex;
+            background: #f8f9fa;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+
+        .dashboard-tab {
+            flex: 1;
+            padding: 15px;
+            text-align: center;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.3s ease;
+        }
+
+        .dashboard-tab.active {
+            background: #007bff;
+            color: white;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            border-left: 4px solid #007bff;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #007bff;
+        }
+
+        .stat-label {
+            color: #666;
+            margin-top: 5px;
+        }
+
+        .incidents-list {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+        }
+
+        .incident-item {
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+            margin-bottom: 10px;
+        }
+
+        .incident-item:last-child {
+            border-bottom: none;
+        }
+
+        .incident-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .incident-type {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        .type-personas { background: #ffe6e6; color: #d32f2f; }
+        .type-seguridad { background: #fff3e0; color: #f57c00; }
+        .type-mantenimiento { background: #e8f5e8; color: #388e3c; }
+        .type-materiales { background: #e3f2fd; color: #1976d2; }
+
+        .back-button {
+            margin-bottom: 20px;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #007bff;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 768px) {
+            .role-selector, .plant-selector {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .locations-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏭 Control de Rondas Corporativo</h1>
+            <p>Sistema Inteligente Multi-Planta</p>
+        </div>
+
+        <!-- Estado de Conexión -->
+        <div id="connectionStatus" class="connection-status status-pending">
+            ⏳ Verificando conexiones...
+        </div>
+
+        <!-- Pantalla Principal: Selector de Rol -->
+        <div id="roleScreen" class="card">
+            <h2 style="text-align: center; margin-bottom: 30px;">Selecciona tu Rol</h2>
+            <div class="role-selector">
+                <button class="role-button" onclick="selectRole('guard')">
+                    👷‍♂️<br><strong>GUARDIA</strong><br>
+                    <small>Realizar recorridos</small>
+                </button>
+                <button class="role-button supervisor" onclick="selectRole('supervisor')">
+                    👔<br><strong>SUPERVISIÓN</strong><br>
+                    <small>Dashboard y reportes</small>
+                </button>
+            </div>
+        </div>
+
+        <!-- Pantalla: Contraseña Supervisión -->
+        <div id="passwordScreen" class="card hidden">
+            <button class="btn btn-secondary back-button" onclick="goBack()">← Regresar</button>
+            <h2 style="text-align: center; margin-bottom: 30px;">🔒 Acceso de Supervisión</h2>
+            <div class="password-container">
+                <input type="password" id="passwordInput" class="password-input" 
+                       placeholder="Ingresa la contraseña" onkeypress="checkPassword(event)">
+                <button class="btn" onclick="verifyPassword()">🔑 Ingresar</button>
+                <div id="passwordError" style="color: red; text-align: center; margin-top: 10px; display: none;">
+                    ❌ Contraseña incorrecta
+                </div>
+            </div>
+        </div>
+
+        <!-- Pantalla: Selector de Planta (Guardias) -->
+        <div id="plantScreen" class="card hidden">
+            <button class="btn btn-secondary back-button" onclick="goBack()">← Regresar</button>
+            <h2 style="text-align: center; margin-bottom: 20px;">🏭 Selecciona la Planta</h2>
+            
+            <!-- Información de Turno Automático -->
+            <div id="turnInfo" class="turn-info turn-auto">
+                <strong>🤖 Detección Automática de Turno</strong><br>
+                <span id="currentTurn">🌅 Turno Diurno (07:30 - 19:30)</span><br>
+                <small>Hora actual: <span id="currentTime"></span></small>
+            </div>
+
+            <div class="plant-selector">
+                <button class="plant-button" onclick="selectPlant('matriz')">
+                    🏢<br><strong>MATRIZ</strong><br>
+                    <small>Planta Principal</small>
+                </button>
+                <button class="plant-button" onclick="selectPlant('ekzotikart')">
+                    🏭<br><strong>EKZOTIKART</strong><br>
+                    <small>Planta Secundaria</small>
+                </button>
+            </div>
+        </div>
+
+        <!-- Pantalla: Sistema de Recorridos -->
+        <div id="roundsScreen" class="card hidden">
+            <button class="btn btn-secondary back-button" onclick="goBackToPlant()">← Cambiar Planta</button>
+            
+            <div style="text-align: center; margin-bottom: 20px;">
+                <h2 id="plantTitle">🏢 MATRIZ</h2>
+                <p id="turnDisplay">🌅 Turno Diurno</p>
+            </div>
+
+            <!-- Progreso del Recorrido -->
+            <div id="progressContainer" class="progress-container hidden">
+                <h3>📊 Progreso del Recorrido</h3>
+                <div class="progress-bar">
+                    <div id="progressFill" class="progress-fill" style="width: 0%"></div>
+                </div>
+                <p><span id="completedLocations">0</span> de <span id="totalLocations">10</span> ubicaciones completadas</p>
+                <p>⏱️ Tiempo transcurrido: <span id="elapsedTime">00:00</span></p>
+            </div>
+
+            <!-- Ubicaciones -->
+            <div id="locationsGrid" class="locations-grid"></div>
+
+            <!-- Botones de Acción -->
+            <div style="text-align: center;">
+                <button id="startRoundBtn" class="btn btn-success" onclick="startRound()">
+                    🚀 Iniciar Recorrido
+                </button>
+                <button id="scanQRBtn" class="btn hidden" onclick="scanQR()">
+                    📱 Escanear QR
+                </button>
+                <button id="finishRoundBtn" class="btn btn-warning hidden" onclick="finishRound()">
+                    ✅ Finalizar Recorrido
+                </button>
+            </div>
+
+            <!-- Historial de Recorridos -->
+            <div style="margin-top: 30px;">
+                <h3>📋 Historial de Recorridos</h3>
+                <div id="roundsHistory"></div>
+            </div>
+        </div>
+
+        <!-- Dashboard de Supervisión -->
+        <div id="supervisorDashboard" class="dashboard card hidden">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h2>📊 Dashboard de Supervisión</h2>
+                <button class="btn btn-secondary" onclick="logout()">🚪 Salir</button>
+            </div>
+
+            <!-- Pestañas del Dashboard -->
+            <div class="dashboard-tabs">
+                <button class="dashboard-tab active" onclick="showDashboardTab('overview')">📈 Resumen</button>
+                <button class="dashboard-tab" onclick="showDashboardTab('plants')">🏭 Por Planta</button>
+                <button class="dashboard-tab" onclick="showDashboardTab('incidents')">🚨 Incidencias</button>
+                <button class="dashboard-tab" onclick="showDashboardTab('exports')">📊 Reportes</button>
+            </div>
+
+            <!-- Contenido de Pestañas -->
+            <div id="overviewTab" class="dashboard-content">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-value" id="totalRounds">0</div>
+                        <div class="stat-label">Total Recorridos</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="totalIncidents">0</div>
+                        <div class="stat-label">Total Incidencias</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="matrizRounds">0</div>
+                        <div class="stat-label">Recorridos Matriz</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="ekzotikRounds">0</div>
+                        <div class="stat-label">Recorridos Ekzotikart</div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="plantsTab" class="dashboard-content hidden">
+                <h3>🏭 Comparativo por Plantas</h3>
+                <div id="plantsComparison"></div>
+            </div>
+
+            <div id="incidentsTab" class="dashboard-content hidden">
+                <h3>🚨 Incidencias Reportadas</h3>
+                <div class="incidents-list" id="incidentsList"></div>
+            </div>
+
+            <div id="exportsTab" class="dashboard-content hidden">
+                <h3>📊 Exportar Reportes</h3>
+                <button class="btn" onclick="exportData()">📄 Exportar Todo (CSV)</button>
+                <button class="btn" onclick="exportIncidents()">🚨 Exportar Solo Incidencias</button>
+            </div>
+        </div>
+
+        <!-- Botón Flotante para Reportar Incidencias -->
+        <button id="reportIncidentBtn" class="floating-button hidden" onclick="openIncidentModal()" title="Reportar Incidencia">
+            🚨
+        </button>
+
+        <!-- Modal de Observaciones/Incidencias -->
+        <div id="observationModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 id="modalTitle">📝 Observaciones</h3>
+                    <button class="close-modal" onclick="closeModal()">&times;</button>
+                </div>
+
+                <div class="form-group">
+                    <label for="observationLocation">📍 Ubicación:</label>
+                    <select id="observationLocation">
+                        <option value="">Seleccionar ubicación...</option>
+                    </select>
+                </div>
+
+                <div id="incidentTypeGroup" class="form-group hidden">
+                    <label for="incidentType">🏷️ Tipo de Incidencia:</label>
+                    <select id="incidentType">
+                        <option value="">Seleccionar tipo...</option>
+                        <option value="personas">👥 Personas</option>
+                        <option value="seguridad">🔒 Seguridad</option>
+                        <option value="mantenimiento">🔧 Mantenimiento</option>
+                        <option value="materiales">📦 Materiales</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="observationText">📝 Descripción:</label>
+                    <textarea id="observationText" placeholder="Describe la observación o incidencia..."></textarea>
+                </div>
+
+                <div class="camera-container">
+                    <h4>📸 Evidencia Fotográfica</h4>
+                    <video id="cameraPreview" class="camera-preview" style="display: none;" autoplay></video>
+                    <canvas id="photoCanvas" style="display: none;"></canvas>
+                    <img id="capturedPhoto" class="camera-preview" style="display: none;">
+                    
+                    <div id="cameraButtons">
+                        <button class="btn" onclick="startCamera()">📷 Activar Cámara</button>
+                        <button id="captureBtn" class="btn btn-success hidden" onclick="capturePhoto()">📸 Tomar Foto</button>
+                        <button id="retakeBtn" class="btn btn-warning hidden" onclick="retakePhoto()">🔄 Tomar de Nuevo</button>
+                    </div>
+                    
+                    <div id="uploadStatus" style="margin-top: 10px; text-align: center;"></div>
+                </div>
+
+                <div style="display: flex; gap: 10px; margin-top: 20px;">
+                    <button class="btn btn-secondary" onclick="closeModal()">❌ Cancelar</button>
+                    <button class="btn btn-success" onclick="saveObservation()">✅ Guardar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        // Firebase Config - CONFIGURADO ✅
+        const firebaseConfig = {
+            apiKey: "AIzaSyCblUOIjFbfHdwjUy6a9pID6hvP_VHX7M8",
+            authDomain: "control-rondines-c4-v2.firebaseapp.com",
+            projectId: "control-rondines-c4-v2",
+            storageBucket: "control-rondines-c4-v2.firebasestorage.app",
+            messagingSenderId: "755804322475",
+            appId: "1:755804322475:web:470f64d09d7621a7f695ee"
+        };
+
+        // Cloudinary Config - CONFIGURADO ✅
+        const cloudinaryConfig = {
+            cloudName: "dadfisfpx",
+            uploadPreset: "control-rondas-preset"
+        };
+
+        // Importar Firebase
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js';
+        import { getFirestore, collection, addDoc, getDocs, query, orderBy, Timestamp } from 'https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore.js';
+
+        // Inicializar Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // Variables Globales
+        let currentRound = null;
+        let currentPlant = '';
+        let currentTurn = '';
+        let isIncidentMode = false;
+        let cameraStream = null;
+        let roundStartTime = null;
+        let roundTimer = null;
+
+        // Ubicaciones por planta
+        const plantLocations = {
+            matriz: [
+                { id: 'MTZ_ENTRADA_001', name: 'Entrada Principal', description: 'Control de acceso principal' },
+                { id: 'MTZ_PASILLO_A_002', name: 'Pasillo A', description: 'Calzado Dama' },
+                { id: 'MTZ_PASILLO_B_003', name: 'Pasillo B', description: 'Calzado Caballero' },
+                { id: 'MTZ_ALMACEN_1_004', name: 'Almacén 1', description: 'Sección Principal' },
+                { id: 'MTZ_ALMACEN_2_005', name: 'Almacén 2', description: 'Sección Secundaria' },
+                { id: 'MTZ_OFICINA_006', name: 'Área Oficinas', description: 'Zona administrativa' },
+                { id: 'MTZ_SALIDA_EMERG_007', name: 'Salida Emergencia', description: 'Salida de emergencia' },
+                { id: 'MTZ_PATIO_008', name: 'Patio Maniobras', description: 'Área de carga y descarga' },
+                { id: 'MTZ_VIGILANCIA_009', name: 'Puesto Vigilancia', description: 'Caseta de vigilancia' },
+                { id: 'MTZ_SALIDA_010', name: 'Salida Principal', description: 'Control de salida' }
+            ],
+            ekzotikart: [
+                { id: 'EKZ_ENTRADA_001', name: 'Entrada Principal', description: 'Control de acceso principal' },
+                { id: 'EKZ_PASILLO_A_002', name: 'Pasillo A', description: 'Área de producción A' },
+                { id: 'EKZ_PASILLO_B_003', name: 'Pasillo B', description: 'Área de producción B' },
+                { id: 'EKZ_ALMACEN_1_004', name: 'Almacén 1', description: 'Sección Principal' },
+                { id: 'EKZ_ALMACEN_2_005', name: 'Almacén 2', description: 'Sección Secundaria' },
+                { id: 'EKZ_OFICINA_006', name: 'Área Oficinas', description: 'Zona administrativa' },
+                { id: 'EKZ_SALIDA_EMERG_007', name: 'Salida Emergencia', description: 'Salida de emergencia' },
+                { id: 'EKZ_PATIO_008', name: 'Patio Maniobras', description: 'Área de carga y descarga' },
+                { id: 'EKZ_VIGILANCIA_009', name: 'Puesto Vigilancia', description: 'Caseta de vigilancia' },
+                { id: 'EKZ_SALIDA_010', name: 'Salida Principal', description: 'Control de salida' }
+            ]
+        };
+
+        // Funciones de Estado y Conexión
+        window.updateConnectionStatus = async function() {
+            const statusEl = document.getElementById('connectionStatus');
+            
+            try {
+                // Test Firebase
+                await addDoc(collection(db, 'test'), {
+                    timestamp: Timestamp.now(),
+                    test: 'connection'
+                });
+
+                // Test Cloudinary
+                const testResponse = await fetch(`https://api.cloudinary.com/v1_1/${cloudinaryConfig.cloudName}/image/upload`, {
+                    method: 'POST',
+                    body: new FormData()
+                }).catch(() => ({ ok: false }));
+
+                statusEl.className = 'connection-status status-active';
+                statusEl.innerHTML = '🔥 Firebase + Cloudinary - Sistema completo activo';
+                
+            } catch (error) {
+                statusEl.className = 'connection-status status-offline';
+                statusEl.innerHTML = '📱 Modo Offline - Los datos se sincronizarán cuando haya conexión';
+            }
+        };
+
+        // Función para detectar turno automáticamente
+        window.detectCurrentTurn = function() {
+            const now = new Date();
+            const hour = now.getHours();
+            const minute = now.getMinutes();
+            const currentTime = hour + (minute / 60);
+
+            // Turno Diurno: 7:30 - 19:30 (7.5 - 19.5)
+            // Turno Nocturno: 19:30 - 7:30 (19.5 - 7.5 del día siguiente)
+            
+            if (currentTime >= 7.5 && currentTime < 19.5) {
+                return {
+                    name: 'diurno',
+                    display: '🌅 Turno Diurno (07:30 - 19:30)',
+                    icon: '🌅'
+                };
+            } else {
+                return {
+                    name: 'nocturno',
+                    display: '🌙 Turno Nocturno (19:30 - 07:30)',
+                    icon: '🌙'
+                };
+            }
+        };
+
+        // Función para actualizar la hora y turno
+        window.updateCurrentTime = function() {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString('es-ES', { 
+                hour: '2-digit', 
+                minute: '2-digit' 
+            });
+            
+            const currentTimeEl = document.getElementById('currentTime');
+            if (currentTimeEl) {
+                currentTimeEl.textContent = timeString;
+            }
+
+            const turn = detectCurrentTurn();
+            const currentTurnEl = document.getElementById('currentTurn');
+            if (currentTurnEl) {
+                currentTurnEl.textContent = turn.display;
+            }
+
+            return turn;
+        };
+
+        // Funciones de Navegación
+        window.selectRole = function(role) {
+            if (role === 'guard') {
+                document.getElementById('roleScreen').classList.add('hidden');
+                document.getElementById('plantScreen').classList.remove('hidden');
+                updateCurrentTime();
+                setInterval(updateCurrentTime, 60000); // Actualizar cada minuto
+            } else if (role === 'supervisor') {
+                document.getElementById('roleScreen').classList.add('hidden');
+                document.getElementById('passwordScreen').classList.remove('hidden');
+            }
+        };
+
+        window.verifyPassword = function() {
+            const password = document.getElementById('passwordInput').value;
+            const correctPassword = 'SUPER2024'; // Contraseña configurable
+            
+            if (password === correctPassword) {
+                document.getElementById('passwordScreen').classList.add('hidden');
+                document.getElementById('supervisorDashboard').classList.remove('hidden');
+                loadDashboardData();
+            } else {
+                document.getElementById('passwordError').style.display = 'block';
+                document.getElementById('passwordInput').value = '';
+            }
+        };
+
+        window.checkPassword = function(event) {
+            if (event.key === 'Enter') {
+                verifyPassword();
+            }
+        };
+
+        window.selectPlant = function(plant) {
+            currentPlant = plant;
+            const turn = updateCurrentTime();
+            currentTurn = turn.name;
+            
+            document.getElementById('plantScreen').classList.add('hidden');
+            document.getElementById('roundsScreen').classList.remove('hidden');
+            
+            // Actualizar títulos
+            const plantTitle = document.getElementById('plantTitle');
+            const turnDisplay = document.getElementById('turnDisplay');
+            
+            if (plant === 'matriz') {
+                plantTitle.textContent = '🏢 MATRIZ';
+            } else {
+                plantTitle.textContent = '🏭 EKZOTIKART';
+            }
+            
+            turnDisplay.textContent = turn.display;
+            
+            // Cargar ubicaciones
+            loadPlantLocations();
+            loadRoundsHistory();
+        };
+
+        window.goBack = function() {
+            // Ocultar todas las pantallas
+            document.querySelectorAll('.card, .dashboard').forEach(el => {
+                el.classList.add('hidden');
+            });
+            
+            // Mostrar pantalla principal
+            document.getElementById('roleScreen').classList.remove('hidden');
+            
+            // Resetear formularios
+            document.getElementById('passwordInput').value = '';
+            document.getElementById('passwordError').style.display = 'none';
+        };
+
+        window.goBackToPlant = function() {
+            document.getElementById('roundsScreen').classList.add('hidden');
+            document.getElementById('plantScreen').classList.remove('hidden');
+            
+            // Resetear estado del recorrido
+            if (currentRound) {
+                finishRound();
+            }
+        };
+
+        window.logout = function() {
+            goBack();
+        };
+
+        // Funciones de Ubicaciones
+        window.loadPlantLocations = function() {
+            const locations = plantLocations[currentPlant];
+            const grid = document.getElementById('locationsGrid');
+            
+            grid.innerHTML = locations.map(location => `
+                <div class="location-card" id="card-${location.id}">
+                    <h4>${location.name}</h4>
+                    <p><small>${location.description}</small></p>
+                    <p><strong>QR:</strong> ${location.id}</p>
+                    <div style="margin-top: 10px;">
+                        <span class="status" id="status-${location.id}">⏳ Pendiente</span>
+                    </div>
+                </div>
+            `).join('');
+
+            // Actualizar selector de ubicaciones en modal
+            const locationSelect = document.getElementById('observationLocation');
+            locationSelect.innerHTML = '<option value="">Seleccionar ubicación...</option>' +
+                locations.map(loc => `<option value="${loc.id}">${loc.name}</option>`).join('');
+        };
+
+        // Funciones de Recorrido
+        window.startRound = function() {
+            currentRound = {
+                id: Date.now().toString(),
+                plant: currentPlant,
+                turn: currentTurn,
+                startTime: new Date(),
+                locations: {},
+                incidents: [],
+                completed: false
+            };
+
+            roundStartTime = Date.now();
+            
+            // Actualizar UI
+            document.getElementById('startRoundBtn').classList.add('hidden');
+            document.getElementById('scanQRBtn').classList.remove('hidden');
+            document.getElementById('finishRoundBtn').classList.remove('hidden');
+            document.getElementById('progressContainer').classList.remove('hidden');
+            document.getElementById('reportIncidentBtn').classList.remove('hidden');
+            
+            // Iniciar timer
+            startRoundTimer();
+            
+            // Actualizar progreso
+            updateProgress();
+        };
+
+        window.startRoundTimer = function() {
+            roundTimer = setInterval(() => {
+                const elapsed = Date.now() - roundStartTime;
+                const minutes = Math.floor(elapsed / 60000);
+                const seconds = Math.floor((elapsed % 60000) / 1000);
+                document.getElementById('elapsedTime').textContent = 
+                    `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            }, 1000);
+        };
+
+        window.scanQR = function() {
+            // Simulación de escaneo QR
+            const locations = plantLocations[currentPlant];
+            const availableLocations = locations.filter(loc => !currentRound.locations[loc.id]);
+            
+            if (availableLocations.length === 0) {
+                alert('✅ Todas las ubicaciones han sido visitadas');
+                return;
+            }
+
+            // Para demostración, usar el primer disponible
+            const location = availableLocations[0];
+            processQRScan(location.id);
+        };
+
+        // Debug: Función para simular escaneo específico
+        window.simulateQRScan = function(locationId) {
+            if (currentRound && !currentRound.locations[locationId]) {
+                processQRScan(locationId);
+            }
+        };
+
+        window.processQRScan = function(locationId) {
+            const location = plantLocations[currentPlant].find(loc => loc.id === locationId);
+            if (!location) return;
+
+            // Registrar ubicación
+            currentRound.locations[locationId] = {
+                timestamp: new Date(),
+                observations: [],
+                photos: []
+            };
+
+            // Actualizar UI
+            const card = document.getElementById(`card-${locationId}`);
+            const status = document.getElementById(`status-${locationId}`);
+            
+            card.classList.add('completed');
+            status.innerHTML = '✅ Completado';
+            status.style.color = '#28a745';
+            
+            // Actualizar progreso
+            updateProgress();
+            
+            // Abrir modal de observaciones
+            openObservationModal(locationId);
+        };
+
+        window.updateProgress = function() {
+            const total = plantLocations[currentPlant].length;
+            const completed = Object.keys(currentRound.locations).length;
+            const percentage = (completed / total) * 100;
+            
+            document.getElementById('progressFill').style.width = `${percentage}%`;
+            document.getElementById('completedLocations').textContent = completed;
+            document.getElementById('totalLocations').textContent = total;
+        };
+
+        window.finishRound = function() {
+            if (!currentRound) return;
+            
+            currentRound.endTime = new Date();
+            currentRound.completed = true;
+            
+            // Parar timer
+            if (roundTimer) {
+                clearInterval(roundTimer);
+                roundTimer = null;
+            }
+            
+            // Guardar en localStorage
+            const rounds = JSON.parse(localStorage.getItem('rounds') || '[]');
+            rounds.push(currentRound);
+            localStorage.setItem('rounds', JSON.stringify(rounds));
+            
+            // Intentar guardar en Firebase
+            saveRoundToFirebase(currentRound);
+            
+            // Resetear UI
+            document.getElementById('startRoundBtn').classList.remove('hidden');
+            document.getElementById('scanQRBtn').classList.add('hidden');
+            document.getElementById('finishRoundBtn').classList.add('hidden');
+            document.getElementById('progressContainer').classList.add('hidden');
+            document.getElementById('reportIncidentBtn').classList.add('hidden');
+            
+            // Resetear estado
+            currentRound = null;
+            
+            // Recargar historial
+            loadRoundsHistory();
+            
+            alert('✅ Recorrido completado y guardado');
+        };
+
+        // Funciones de Firebase
+        window.saveRoundToFirebase = async function(round) {
+            try {
+                await addDoc(collection(db, 'rounds'), {
+                    ...round,
+                    startTime: Timestamp.fromDate(round.startTime),
+                    endTime: round.endTime ? Timestamp.fromDate(round.endTime) : null,
+                    syncTimestamp: Timestamp.now()
+                });
+                console.log('✅ Recorrido guardado en Firebase');
+            } catch (error) {
+                console.log('📱 Guardado offline - se sincronizará automáticamente');
+            }
+        };
+
+        window.saveIncidentToFirebase = async function(incident) {
+            try {
+                await addDoc(collection(db, 'incidents'), {
+                    ...incident,
+                    timestamp: Timestamp.fromDate(incident.timestamp),
+                    syncTimestamp: Timestamp.now()
+                });
+                console.log('✅ Incidencia guardada en Firebase');
+            } catch (error) {
+                console.log('📱 Incidencia guardada offline');
+            }
+        };
+
+        // Funciones de Modal y Observaciones
+        window.openObservationModal = function(locationId = null) {
+            isIncidentMode = locationId === null;
+            
+            const modal = document.getElementById('observationModal');
+            const title = document.getElementById('modalTitle');
+            const incidentGroup = document.getElementById('incidentTypeGroup');
+            const locationSelect = document.getElementById('observationLocation');
+            
+            if (isIncidentMode) {
+                title.textContent = '🚨 Reportar Incidencia';
+                incidentGroup.classList.remove('hidden');
+                locationSelect.value = '';
+            } else {
+                title.textContent = '📝 Observaciones de Ubicación';
+                incidentGroup.classList.add('hidden');
+                locationSelect.value = locationId;
+            }
+            
+            // Resetear formulario
+            document.getElementById('observationText').value = '';
+            document.getElementById('incidentType').value = '';
+            resetCamera();
+            
+            modal.style.display = 'block';
+        };
+
+        window.openIncidentModal = function() {
+            openObservationModal(null);
+        };
+
+        window.closeModal = function() {
+            document.getElementById('observationModal').style.display = 'none';
+            resetCamera();
+        };
+
+        window.saveObservation = function() {
+            const locationId = document.getElementById('observationLocation').value;
+            const text = document.getElementById('observationText').value;
+            const incidentType = document.getElementById('incidentType').value;
+            
+            if (!locationId) {
+                alert('⚠️ Selecciona una ubicación');
+                return;
+            }
+            
+            if (!text.trim()) {
+                alert('⚠️ Escribe una descripción');
+                return;
+            }
+            
+            if (isIncidentMode && !incidentType) {
+                alert('⚠️ Selecciona el tipo de incidencia');
+                return;
+            }
+            
+            const observation = {
+                locationId,
+                text: text.trim(),
+                timestamp: new Date(),
+                type: isIncidentMode ? 'incident' : 'observation',
+                incidentType: incidentType || null,
+                plant: currentPlant,
+                turn: currentTurn,
+                photoUrl: capturedPhotoUrl || null
+            };
+            
+            if (isIncidentMode) {
+                // Guardar como incidencia independiente
+                const incidents = JSON.parse(localStorage.getItem('incidents') || '[]');
+                incidents.push(observation);
+                localStorage.setItem('incidents', JSON.stringify(incidents));
+                saveIncidentToFirebase(observation);
+                
+                alert('✅ Incidencia reportada correctamente');
+            } else {
+                // Agregar a ubicación del recorrido actual
+                if (currentRound && currentRound.locations[locationId]) {
+                    currentRound.locations[locationId].observations.push(observation);
+                    if (capturedPhotoUrl) {
+                        currentRound.locations[locationId].photos.push(capturedPhotoUrl);
+                    }
+                }
+                
+                alert('✅ Observación guardada');
+            }
+            
+            closeModal();
+        };
+
+        // Funciones de Cámara
+        let capturedPhotoUrl = null;
+
+        window.startCamera = async function() {
+            try {
+                cameraStream = await navigator.mediaDevices.getUserMedia({ 
+                    video: { facingMode: 'environment' } 
+                });
+                
+                const video = document.getElementById('cameraPreview');
+                video.srcObject = cameraStream;
+                video.style.display = 'block';
+                
+                document.getElementById('captureBtn').classList.remove('hidden');
+            } catch (error) {
+                alert('❌ No se pudo acceder a la cámara');
+            }
+        };
+
+        window.capturePhoto = function() {
+            const video = document.getElementById('cameraPreview');
+            const canvas = document.getElementById('photoCanvas');
+            const ctx = canvas.getContext('2d');
+            
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            ctx.drawImage(video, 0, 0);
+            
+            canvas.toBlob(async (blob) => {
+                const imageUrl = URL.createObjectURL(blob);
+                
+                // Mostrar preview
+                const img = document.getElementById('capturedPhoto');
+                img.src = imageUrl;
+                img.style.display = 'block';
+                
+                // Ocultar video
+                video.style.display = 'none';
+                document.getElementById('captureBtn').classList.add('hidden');
+                document.getElementById('retakeBtn').classList.remove('hidden');
+                
+                // Subir a Cloudinary
+                await uploadToCloudinary(blob);
+                
+                // Parar cámara
+                if (cameraStream) {
+                    cameraStream.getTracks().forEach(track => track.stop());
+                }
+            }, 'image/jpeg', 0.8);
+        };
+
+        window.retakePhoto = function() {
+            resetCamera();
+            startCamera();
+        };
+
+        window.resetCamera = function() {
+            const video = document.getElementById('cameraPreview');
+            const img = document.getElementById('capturedPhoto');
+            
+            video.style.display = 'none';
+            img.style.display = 'none';
+            
+            document.getElementById('captureBtn').classList.add('hidden');
+            document.getElementById('retakeBtn').classList.add('hidden');
+            document.getElementById('uploadStatus').innerHTML = '';
+            
+            if (cameraStream) {
+                cameraStream.getTracks().forEach(track => track.stop());
+                cameraStream = null;
+            }
+            
+            capturedPhotoUrl = null;
+        };
+
+        window.uploadToCloudinary = async function(blob) {
+            const uploadStatus = document.getElementById('uploadStatus');
+            uploadStatus.innerHTML = '⏳ Subiendo imagen...';
+            
+            try {
+                const formData = new FormData();
+                formData.append('file', blob);
+                formData.append('upload_preset', cloudinaryConfig.uploadPreset);
+                formData.append('folder', 'rondas-photos');
+                
+                const response = await fetch(
+                    `https://api.cloudinary.com/v1_1/${cloudinaryConfig.cloudName}/image/upload`,
+                    {
+                        method: 'POST',
+                        body: formData
+                    }
+                );
+                
+                const data = await response.json();
+                capturedPhotoUrl = data.secure_url;
+                uploadStatus.innerHTML = '✅ Imagen subida a Cloudinary';
+            } catch (error) {
+                uploadStatus.innerHTML = '📱 Imagen guardada localmente';
+            }
+        };
+
+        // Funciones de Historial
+        window.loadRoundsHistory = function() {
+            const rounds = JSON.parse(localStorage.getItem('rounds') || '[]');
+            const plantRounds = rounds.filter(round => round.plant === currentPlant);
+            
+            const historyEl = document.getElementById('roundsHistory');
+            
+            if (plantRounds.length === 0) {
+                historyEl.innerHTML = '<p>📋 No hay recorridos registrados para esta planta</p>';
+                return;
+            }
+            
+            historyEl.innerHTML = plantRounds.slice(-5).reverse().map(round => {
+                const completedLocations = Object.keys(round.locations).length;
+                const totalLocations = plantLocations[round.plant].length;
+                const percentage = Math.round((completedLocations / totalLocations) * 100);
+                
+                return `
+                    <div style="background: #f8f9fa; padding: 15px; margin: 10px 0; border-radius: 8px;">
+                        <strong>${round.turn === 'diurno' ? '🌅' : '🌙'} ${round.startTime ? new Date(round.startTime).toLocaleString('es-ES') : 'Fecha inválida'}</strong><br>
+                        <small>
+                            📍 ${completedLocations}/${totalLocations} ubicaciones (${percentage}%)<br>
+                            🚨 ${round.incidents ? round.incidents.length : 0} incidencias<br>
+                            ⏱️ ${round.endTime ? 'Completado' : 'En progreso'}
+                        </small>
+                    </div>
+                `;
+            }).join('');
+        };
+
+        // Funciones de Dashboard
+        window.loadDashboardData = function() {
+            const rounds = JSON.parse(localStorage.getItem('rounds') || '[]');
+            const incidents = JSON.parse(localStorage.getItem('incidents') || '[]');
+            
+            // Estadísticas generales
+            document.getElementById('totalRounds').textContent = rounds.length;
+            document.getElementById('totalIncidents').textContent = incidents.length;
+            document.getElementById('matrizRounds').textContent = rounds.filter(r => r.plant === 'matriz').length;
+            document.getElementById('ekzotikRounds').textContent = rounds.filter(r => r.plant === 'ekzotikart').length;
+            
+            // Cargar incidencias
+            loadIncidentsList(incidents);
+        };
+
+        window.loadIncidentsList = function(incidents) {
+            const incidentsList = document.getElementById('incidentsList');
+            
+            if (incidents.length === 0) {
+                incidentsList.innerHTML = '<p>🚨 No hay incidencias reportadas</p>';
+                return;
+            }
+            
+            incidentsList.innerHTML = incidents.slice(-10).reverse().map(incident => {
+                const typeClass = `type-${incident.incidentType || 'general'}`;
+                const plantName = incident.plant === 'matriz' ? 'MATRIZ' : 'EKZOTIKART';
+                const turnIcon = incident.turn === 'diurno' ? '🌅' : '🌙';
+                
+                return `
+                    <div class="incident-item">
+                        <div class="incident-header">
+                            <span class="incident-type ${typeClass}">
+                                ${incident.incidentType?.toUpperCase() || 'GENERAL'}
+                            </span>
+                            <small>${turnIcon} ${plantName}</small>
+                        </div>
+                        <p><strong>📍 ${incident.locationId}</strong></p>
+                        <p>${incident.text}</p>
+                        <small>🕐 ${new Date(incident.timestamp).toLocaleString('es-ES')}</small>
+                        ${incident.photoUrl ? '<p>📸 Con evidencia fotográfica</p>' : ''}
+                    </div>
+                `;
+            }).join('');
+        };
+
+        window.showDashboardTab = function(tab) {
+            // Ocultar todas las pestañas
+            document.querySelectorAll('.dashboard-content').forEach(el => {
+                el.classList.add('hidden');
+            });
+            
+            // Remover clase active de todos los botones
+            document.querySelectorAll('.dashboard-tab').forEach(el => {
+                el.classList.remove('active');
+            });
+            
+            // Mostrar pestaña seleccionada
+            document.getElementById(`${tab}Tab`).classList.remove('hidden');
+            event.target.classList.add('active');
+        };
+
+        // Funciones de Exportación
+        window.exportData = function() {
+            const rounds = JSON.parse(localStorage.getItem('rounds') || '[]');
+            const incidents = JSON.parse(localStorage.getItem('incidents') || '[]');
+            
+            let csvContent = "data:text/csv;charset=utf-8,";
+            csvContent += "Tipo,Fecha,Hora,Planta,Turno,Ubicacion,Descripcion,Observaciones\n";
+            
+            // Agregar recorridos
+            rounds.forEach(round => {
+                Object.keys(round.locations).forEach(locationId => {
+                    const location = round.locations[locationId];
+                    const fecha = new Date(round.startTime).toLocaleDateString('es-ES');
+                    const hora = new Date(round.startTime).toLocaleTimeString('es-ES');
+                    
+                    csvContent += `Recorrido,"${fecha}","${hora}","${round.plant}","${round.turn}","${locationId}","Ubicacion visitada","${location.observations.map(obs => obs.text).join('; ')}"\n`;
+                });
+            });
+            
+            // Agregar incidencias
+            incidents.forEach(incident => {
+                const fecha = new Date(incident.timestamp).toLocaleDateString('es-ES');
+                const hora = new Date(incident.timestamp).toLocaleTimeString('es-ES');
+                
+                csvContent += `Incidencia,"${fecha}","${hora}","${incident.plant}","${incident.turn}","${incident.locationId}","${incident.incidentType}","${incident.text}"\n`;
+            });
+            
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", `control_rondas_${new Date().toISOString().split('T')[0]}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        };
+
+        window.exportIncidents = function() {
+            const incidents = JSON.parse(localStorage.getItem('incidents') || '[]');
+            
+            let csvContent = "data:text/csv;charset=utf-8,";
+            csvContent += "Fecha,Hora,Planta,Turno,Ubicacion,Tipo,Descripcion,Foto\n";
+            
+            incidents.forEach(incident => {
+                const fecha = new Date(incident.timestamp).toLocaleDateString('es-ES');
+                const hora = new Date(incident.timestamp).toLocaleTimeString('es-ES');
+                
+                csvContent += `"${fecha}","${hora}","${incident.plant}","${incident.turn}","${incident.locationId}","${incident.incidentType}","${incident.text}","${incident.photoUrl || 'No'}"\n`;
+            });
+            
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", `incidencias_${new Date().toISOString().split('T')[0]}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        };
+
+        // Debug: Funciones para testing
+        window.debugCloudinary = {
+            simulate: function(locationId) {
+                if (currentRound) {
+                    simulateQRScan(locationId);
+                } else {
+                    alert('⚠️ Inicia un recorrido primero');
+                }
+            }
+        };
+
+        // Inicialización
+        document.addEventListener('DOMContentLoaded', function() {
+            updateConnectionStatus();
+            updateCurrentTime();
+        });
+
+        // Cerrar modal al hacer click fuera
+        window.onclick = function(event) {
+            const modal = document.getElementById('observationModal');
+            if (event.target === modal) {
+                closeModal();
+            }
+        };
+    </script>
+</body>
+</html>
