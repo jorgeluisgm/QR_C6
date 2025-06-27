@@ -1,0 +1,2873 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Control de Rondas Corporativo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            padding: 30px;
+            margin-bottom: 20px;
+            transition: transform 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        .connection-status {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+
+        .status-active {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .role-selector {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .role-button {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            border: none;
+            border-radius: 15px;
+            padding: 40px 20px;
+            font-size: 1.3rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .role-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+        }
+
+        .role-button.supervisor {
+            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+        }
+
+        .plant-selector {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .plant-button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 30px 20px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .plant-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+
+        .turn-info {
+            background: #e3f2fd;
+            border: 1px solid #bbdefb;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .turn-auto {
+            background: #e8f5e8;
+            border-color: #c8e6c9;
+            color: #2e7d32;
+        }
+
+        .password-container {
+            max-width: 400px;
+            margin: 0 auto;
+        }
+
+        .password-input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .password-input:focus {
+            outline: none;
+            border-color: #4facfe;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 15px 30px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            margin-bottom: 10px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+        }
+
+        .btn-warning {
+            background: linear-gradient(135deg, #ff8008 0%, #ffc837 100%);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #ff416c 0%, #ff4b2b 100%);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #6c757d 0%, #495057 100%);
+        }
+
+        .progress-container {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background: #e9ecef;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #11998e 0%, #38ef7d 100%);
+            transition: width 0.3s ease;
+            border-radius: 10px;
+        }
+
+        .locations-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .location-card {
+            background: white;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            padding: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .location-card.completed {
+            border-color: #28a745;
+            background: #f8fff8;
+        }
+
+        .location-card.active {
+            border-color: #007bff;
+            background: #f8f9ff;
+        }
+
+        /* NUEVO: Estilos mejorados para QR Scanner */
+        .qr-scanner {
+            background: linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%);
+            border: 3px dashed #2196f3;
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+            margin: 20px 0;
+            box-shadow: 0 5px 15px rgba(33, 150, 243, 0.2);
+            animation: pulse-border 2s infinite;
+        }
+
+        @keyframes pulse-border {
+            0% { border-color: #2196f3; }
+            50% { border-color: #ff9800; }
+            100% { border-color: #2196f3; }
+        }
+
+        .qr-video-container {
+            position: relative;
+            display: inline-block;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            margin: 15px 0;
+        }
+
+        #qrVideo {
+            width: 100%;
+            max-width: 400px;
+            height: auto;
+            border-radius: 15px;
+            background: #000;
+        }
+
+        .qr-overlay {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 200px;
+            height: 200px;
+            border: 3px solid #ff5722;
+            border-radius: 15px;
+            pointer-events: none;
+        }
+
+        .qr-overlay::before,
+        .qr-overlay::after {
+            content: '';
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            border: 4px solid #ff5722;
+        }
+
+        .qr-overlay::before {
+            top: -4px;
+            left: -4px;
+            border-right: transparent;
+            border-bottom: transparent;
+        }
+
+        .qr-overlay::after {
+            bottom: -4px;
+            right: -4px;
+            border-left: transparent;
+            border-top: transparent;
+        }
+
+        .scan-status {
+            font-size: 1.1rem;
+            font-weight: bold;
+            margin: 15px 0;
+            padding: 10px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .scan-status.scanning {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+
+        .scan-status.success {
+            background: #e8f5e8;
+            color: #2e7d32;
+        }
+
+        .scan-status.error {
+            background: #ffebee;
+            color: #c62828;
+        }
+
+        .floating-button {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, #ff416c 0%, #ff4b2b 100%);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            font-size: 1.5rem;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .floating-button:hover {
+            transform: scale(1.1);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 2000;
+            overflow-y: auto;
+        }
+
+        .modal-content {
+            background: white;
+            margin: 5% auto;
+            padding: 30px;
+            border-radius: 15px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #eee;
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 2rem;
+            cursor: pointer;
+            color: #999;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #555;
+        }
+
+        .form-group select, 
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .camera-container {
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .camera-preview {
+            width: 100%;
+            max-width: 400px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+        }
+
+        .dashboard {
+            display: none;
+        }
+
+        .dashboard-tabs {
+            display: flex;
+            background: #f8f9fa;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+
+        .dashboard-tab {
+            flex: 1;
+            padding: 15px;
+            text-align: center;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.3s ease;
+        }
+
+        .dashboard-tab.active {
+            background: #007bff;
+            color: white;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            border-left: 4px solid #007bff;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #007bff;
+        }
+
+        .stat-label {
+            color: #666;
+            margin-top: 5px;
+        }
+
+        .incidents-list {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+        }
+
+        .incident-item {
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+            margin-bottom: 10px;
+        }
+
+        .incident-item:last-child {
+            border-bottom: none;
+        }
+
+        .incident-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .incident-type {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        .type-personas { background: #ffe6e6; color: #d32f2f; }
+        .type-seguridad { background: #fff3e0; color: #f57c00; }
+        .type-mantenimiento { background: #e8f5e8; color: #388e3c; }
+        .type-materiales { background: #e3f2fd; color: #1976d2; }
+
+        .back-button {
+            margin-bottom: 20px;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* NUEVO: Botones de control QR mejorados */
+        .qr-controls {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+
+        .qr-controls .btn {
+            width: auto;
+            min-width: 150px;
+            margin: 0;
+        }
+
+        /* NUEVO: Efecto de vibración visual cuando se detecta QR */
+        .qr-success {
+            animation: qr-detected 0.5s ease-in-out;
+        }
+
+        @keyframes qr-detected {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); background: #4caf50; }
+            100% { transform: scale(1); }
+        }
+
+        /* NUEVO: Indicador de carga para cámara */
+        .camera-loading {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 40px;
+        }
+
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #2196f3;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 15px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 768px) {
+            .role-selector, .plant-selector {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .locations-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .qr-controls {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .qr-controls .btn {
+                width: 100%;
+                max-width: 300px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏭 Control de Rondas Corporativo</h1>
+            <p>Sistema Inteligente Multi-Planta</p>
+        </div>
+
+        <!-- Estado de Conexión -->
+        <div id="connectionStatus" class="connection-status status-active">
+            🔥 Sistema completo activo
+        </div>
+
+        <!-- Pantalla Principal: Selector de Rol -->
+        <div id="roleScreen" class="card">
+            <h2 style="text-align: center; margin-bottom: 30px;">Selecciona tu Rol</h2>
+            <div class="role-selector">
+                <button class="role-button" onclick="selectRole('guard')">
+                    👷‍♂️<br><strong>GUARDIA</strong><br>
+                    <small>Realizar recorridos</small>
+                </button>
+                <button class="role-button supervisor" onclick="selectRole('supervisor')">
+                    👔<br><strong>SUPERVISIÓN</strong><br>
+                    <small>Dashboard y reportes</small>
+                </button>
+            </div>
+        </div>
+
+        <!-- Pantalla: Contraseña Supervisión -->
+        <div id="passwordScreen" class="card hidden">
+            <button class="btn btn-secondary back-button" onclick="goBack()">← Regresar</button>
+            <h2 style="text-align: center; margin-bottom: 30px;">🔒 Acceso de Supervisión</h2>
+            <div class="password-container">
+                <input type="password" id="passwordInput" class="password-input" 
+                       placeholder="Ingresa la contraseña" onkeypress="checkPassword(event)">
+                <button class="btn" onclick="verifyPassword()">🔑 Ingresar</button>
+                <div id="passwordError" style="color: red; text-align: center; margin-top: 10px; display: none;">
+                    ❌ Contraseña incorrecta
+                </div>
+            </div>
+        </div>
+
+        <!-- Pantalla: Selector de Planta (Guardias) -->
+        <div id="plantScreen" class="card hidden">
+            <button class="btn btn-secondary back-button" onclick="goBack()">← Regresar</button>
+            <h2 style="text-align: center; margin-bottom: 20px;">🏭 Selecciona la Planta</h2>
+            
+            <!-- Información de Turno Automático -->
+            <div id="turnInfo" class="turn-info turn-auto">
+                <strong>🤖 Detección Automática de Turno</strong><br>
+                <span id="currentTurn">🌅 Turno Diurno (07:30 - 19:30)</span><br>
+                <small>Hora actual: <span id="currentTime"></span></small>
+            </div>
+
+            <div class="plant-selector">
+                <button class="plant-button" onclick="selectPlant('matriz')">
+                    🏢<br><strong>MATRIZ</strong><br>
+                    <small>Planta Principal</small>
+                </button>
+                <button class="plant-button" onclick="selectPlant('ekzotikart')">
+                    🏭<br><strong>EKZOTIKART</strong><br>
+                    <small>Planta Secundaria</small>
+                </button>
+            </div>
+        </div>
+
+        <!-- Pantalla: Sistema de Recorridos -->
+        <div id="roundsScreen" class="card hidden">
+            <button class="btn btn-secondary back-button" onclick="goBackToPlant()">← Cambiar Planta</button>
+            
+            <div style="text-align: center; margin-bottom: 20px;">
+                <h2 id="plantTitle">🏢 MATRIZ</h2>
+                <p id="turnDisplay">🌅 Turno Diurno</p>
+            </div>
+
+            <!-- Progreso del Recorrido -->
+            <div id="progressContainer" class="progress-container hidden">
+                <h3>📊 Progreso del Recorrido</h3>
+                <div class="progress-bar">
+                    <div id="progressFill" class="progress-fill" style="width: 0%"></div>
+                </div>
+                <p><span id="completedLocations">0</span> de <span id="totalLocations">10</span> ubicaciones completadas</p>
+                <p>⏱️ Tiempo transcurrido: <span id="elapsedTime">00:00</span></p>
+            </div>
+
+            <!-- Botones de Acción Principal -->
+            <div style="text-align: center; margin-bottom: 20px;">
+                <button id="startRoundBtn" class="btn btn-success" onclick="startRound()">
+                    🚀 Iniciar Recorrido
+                </button>
+            </div>
+
+            <!-- CORREGIDO: Scanner QR con validación de jsQR -->
+            <div id="qrScannerSection" class="qr-scanner hidden">
+                <div class="camera-loading" id="cameraLoading">
+                    <div class="loading-spinner"></div>
+                    <p>📡 Verificando compatibilidad...</p>
+                </div>
+                
+                <div id="qrScannerContent" class="hidden">
+                    <h3>📱 Scanner de Códigos QR</h3>
+                    <p><strong>🎯 Apunta la cámara al código QR de la ubicación</strong></p>
+                    
+                    <div class="qr-video-container" id="qrVideoContainer">
+                        <video id="qrVideo" autoplay playsinline muted></video>
+                        <div class="qr-overlay"></div>
+                    </div>
+                    
+                    <div id="scanStatus" class="scan-status scanning">
+                        🔍 Iniciando scanner...
+                    </div>
+                    
+                    <!-- NUEVO: Debug info -->
+                    <div id="debugInfo" style="font-size: 0.8rem; color: #666; margin-top: 10px; display: none;">
+                        Video: <span id="videoStatus">-</span> | 
+                        jsQR: <span id="jsqrStatus">-</span> | 
+                        Frames: <span id="frameCount">0</span>
+                    </div>
+                </div>
+                
+                <div class="qr-controls">
+                    <button class="btn btn-danger" onclick="cancelQRScan()">❌ Cancelar Scanner</button>
+                    <button class="btn btn-secondary" onclick="toggleDebugInfo()">🔧 Debug</button>
+                </div>
+            </div>
+
+            <!-- Botones de Control del Recorrido -->
+            <div style="text-align: center; margin-bottom: 20px;">
+                <button id="scanQRBtn" class="btn hidden" onclick="showQRScanner()">
+                    📱 Escanear QR
+                </button>
+                <button id="finishRoundBtn" class="btn btn-warning hidden" onclick="finishRound()">
+                    ✅ Finalizar Recorrido
+                </button>
+            </div>
+
+            <!-- Ubicaciones (SIN códigos QR visibles) -->
+            <div id="locationsGrid" class="locations-grid"></div>
+
+            <!-- Historial de Recorridos -->
+            <div style="margin-top: 30px;">
+                <h3>📋 Historial de Recorridos</h3>
+                <div id="roundsHistory"></div>
+            </div>
+        </div>
+
+        <!-- Dashboard de Supervisión -->
+        <div id="supervisorDashboard" class="card hidden">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h2>📊 Dashboard de Supervisión</h2>
+                <button class="btn btn-secondary" onclick="logout()">🚪 Salir</button>
+            </div>
+
+            <!-- Estado de Notificaciones -->
+            <div id="notificationStatus" class="connection-status" style="margin-bottom: 20px;">
+                <button class="btn" onclick="enableNotifications()" id="enableNotifBtn">🔔 Activar Notificaciones</button>
+                <button class="btn" onclick="configureReminders()" id="configRemindersBtn" style="margin-left: 10px;">⏰ Configurar Recordatorios</button>
+            </div>
+
+            <!-- Pestañas del Dashboard -->
+            <div class="dashboard-tabs">
+                <button class="dashboard-tab active" onclick="showDashboardTab('overview', event)">📈 Resumen</button>
+                <button class="dashboard-tab" onclick="showDashboardTab('analytics', event)">📊 Análisis</button>
+                <button class="dashboard-tab" onclick="showDashboardTab('incidents', event)">🚨 Incidencias</button>
+                <button class="dashboard-tab" onclick="showDashboardTab('exports', event)">📄 Reportes</button>
+            </div>
+
+            <!-- Contenido de Pestañas -->
+            <div id="overviewTab" class="dashboard-content">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-value" id="totalRounds">0</div>
+                        <div class="stat-label">Total Recorridos</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="totalIncidents">0</div>
+                        <div class="stat-label">Total Incidencias</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="matrizRounds">0</div>
+                        <div class="stat-label">Recorridos Matriz</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="ekzotikRounds">0</div>
+                        <div class="stat-label">Recorridos Ekzotikart</div>
+                    </div>
+                </div>
+
+                <!-- Recordatorios Activos -->
+                <div id="remindersSection" class="card" style="margin-top: 20px; display: none;">
+                    <h3>⏰ Recordatorios Aleatorios</h3>
+                    <div id="remindersInfo"></div>
+                    <button class="btn btn-danger" onclick="stopReminders()">🛑 Detener Recordatorios</button>
+                </div>
+            </div>
+
+            <!-- Pestaña de Análisis -->
+            <div id="analyticsTab" class="dashboard-content hidden">
+                <h3>📊 Análisis y Tendencias</h3>
+                
+                <!-- Gráfica de Tendencias -->
+                <div class="card" style="margin-bottom: 20px;">
+                    <h4>📈 Incidencias por Día (Última Semana)</h4>
+                    <div id="trendsChart"></div>
+                </div>
+
+                <!-- Comparativo Plantas -->
+                <div class="card" style="margin-bottom: 20px;">
+                    <h4>🏭 Comparativo entre Plantas</h4>
+                    <div id="plantsChart"></div>
+                </div>
+
+                <!-- Mapa de Calor -->
+                <div class="card">
+                    <h4>🔥 Mapa de Calor - Problemas por Ubicación</h4>
+                    <div id="heatMap"></div>
+                </div>
+            </div>
+
+            <div id="incidentsTab" class="dashboard-content hidden">
+                <h3>🚨 Incidencias Reportadas</h3>
+                <div class="incidents-list" id="incidentsList"></div>
+            </div>
+
+            <div id="exportsTab" class="dashboard-content hidden">
+                <h3>📊 Exportar Reportes</h3>
+                <button class="btn" onclick="exportData()">📄 Exportar Todo (CSV)</button>
+                <button class="btn" onclick="exportIncidents()">🚨 Exportar Solo Incidencias</button>
+                <button class="btn" onclick="exportAnalytics()">📈 Exportar Análisis</button>
+            </div>
+        </div>
+
+        <!-- Modal de Configuración de Recordatorios -->
+        <div id="remindersModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>⏰ Configurar Recordatorios Aleatorios</h3>
+                    <button class="close-modal" onclick="closeRemindersModal()">&times;</button>
+                </div>
+
+                <div class="form-group">
+                    <label for="reminderFrequency">🕐 Frecuencia Base (horas):</label>
+                    <select id="reminderFrequency">
+                        <option value="1">Cada ~1 hora (±15 min)</option>
+                        <option value="2" selected>Cada ~2 horas (±30 min)</option>
+                        <option value="3">Cada ~3 horas (±45 min)</option>
+                        <option value="4">Cada ~4 horas (±60 min)</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="reminderPlant">🏭 Planta Objetivo:</label>
+                    <select id="reminderPlant">
+                        <option value="both">Ambas Plantas (Aleatorio)</option>
+                        <option value="matriz">Solo MATRIZ</option>
+                        <option value="ekzotikart">Solo EKZOTIKART</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" id="soundAlerts" checked> 🔊 Sonido en Alertas
+                    </label>
+                </div>
+
+                <div style="display: flex; gap: 10px; margin-top: 20px;">
+                    <button class="btn btn-secondary" onclick="closeRemindersModal()">❌ Cancelar</button>
+                    <button class="btn btn-success" onclick="startReminders()">✅ Activar Recordatorios</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Botón Flotante para Reportar Incidencias -->
+        <button id="reportIncidentBtn" class="floating-button hidden" onclick="openIncidentModal()" title="Reportar Incidencia">
+            🚨
+        </button>
+
+        <!-- Modal de Observaciones/Incidencias -->
+        <div id="observationModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 id="modalTitle">📝 Observaciones</h3>
+                    <button class="close-modal" onclick="closeModal()">&times;</button>
+                </div>
+
+                <div class="form-group">
+                    <label for="observationLocation">📍 Ubicación:</label>
+                    <select id="observationLocation">
+                        <option value="">Seleccionar ubicación...</option>
+                    </select>
+                </div>
+
+                <div id="incidentTypeGroup" class="form-group hidden">
+                    <label for="incidentType">🏷️ Tipo de Incidencia:</label>
+                    <select id="incidentType">
+                        <option value="">Seleccionar tipo...</option>
+                        <option value="personas">👥 Personas</option>
+                        <option value="seguridad">🔒 Seguridad</option>
+                        <option value="mantenimiento">🔧 Mantenimiento</option>
+                        <option value="materiales">📦 Materiales</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="observationText">📝 Descripción (Opcional):</label>
+                    <textarea id="observationText" placeholder="Describe la observación o incidencia (opcional)..."></textarea>
+                </div>
+
+                <div class="camera-container">
+                    <h4>📸 Evidencia Fotográfica (Opcional)</h4>
+                    <p><small>💡 Solo toma foto si es necesaria para documentar</small></p>
+                    <video id="cameraPreview" class="camera-preview" style="display: none;" autoplay></video>
+                    <canvas id="photoCanvas" style="display: none;"></canvas>
+                    <img id="capturedPhoto" class="camera-preview" style="display: none;">
+                    
+                    <div id="cameraButtons">
+                        <button class="btn" onclick="startCamera()">📷 Activar Cámara</button>
+                        <button id="captureBtn" class="btn btn-success hidden" onclick="capturePhoto()">📸 Tomar Foto</button>
+                        <button id="retakeBtn" class="btn btn-warning hidden" onclick="retakePhoto()">🔄 Tomar de Nuevo</button>
+                    </div>
+                </div>
+
+                <div style="display: flex; gap: 10px; margin-top: 20px;">
+                    <button class="btn btn-secondary" onclick="closeModal()">❌ Cancelar</button>
+                    <button class="btn btn-success" onclick="saveObservation()">✅ Guardar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ===============================================
+        // 📝 VARIABLES GLOBALES
+        // ===============================================
+        let currentRound = null;
+        let currentPlant = '';
+        let currentTurn = '';
+        let isIncidentMode = false;
+        let cameraStream = null;
+        let roundStartTime = null;
+        let roundTimer = null;
+        let capturedPhotoUrl = null;
+        
+        // NUEVO: Variables para QR Scanner mejorado
+        let qrVideo = null;
+        let qrStream = null;
+        let scanningActive = false;
+        let qrDetectionLoop = null;
+        
+        // Variables para funcionalidades avanzadas
+        let notificationsEnabled = false;
+        let reminderInterval = null;
+        let reminderConfig = {
+            frequency: 2,
+            plant: 'both',
+            soundEnabled: true
+        };
+
+        // ===============================================
+        // 🏭 UBICACIONES POR PLANTA (SIN CÓDIGOS QR VISIBLES)
+        // ===============================================
+        const plantLocations = {
+            matriz: [
+                { id: 'MTZ_ENTRADA_001', name: 'Entrada Principal', description: 'Control de acceso principal' },
+                { id: 'MTZ_PASILLO_A_002', name: 'Pasillo A', description: 'Calzado Dama' },
+                { id: 'MTZ_PASILLO_B_003', name: 'Pasillo B', description: 'Calzado Caballero' },
+                { id: 'MTZ_ALMACEN_1_004', name: 'Almacén 1', description: 'Sección Principal' },
+                { id: 'MTZ_ALMACEN_2_005', name: 'Almacén 2', description: 'Sección Secundaria' },
+                { id: 'MTZ_OFICINA_006', name: 'Área Oficinas', description: 'Zona administrativa' },
+                { id: 'MTZ_SALIDA_EMERG_007', name: 'Salida Emergencia', description: 'Salida de emergencia' },
+                { id: 'MTZ_PATIO_008', name: 'Patio Maniobras', description: 'Área de carga y descarga' },
+                { id: 'MTZ_VIGILANCIA_009', name: 'Puesto Vigilancia', description: 'Caseta de vigilancia' },
+                { id: 'MTZ_SALIDA_010', name: 'Salida Principal', description: 'Control de salida' }
+            ],
+            ekzotikart: [
+                { id: 'EKZ_ENTRADA_001', name: 'Entrada Principal', description: 'Control de acceso principal' },
+                { id: 'EKZ_PASILLO_A_002', name: 'Pasillo A', description: 'Área de producción A' },
+                { id: 'EKZ_PASILLO_B_003', name: 'Pasillo B', description: 'Área de producción B' },
+                { id: 'EKZ_ALMACEN_1_004', name: 'Almacén 1', description: 'Sección Principal' },
+                { id: 'EKZ_ALMACEN_2_005', name: 'Almacén 2', description: 'Sección Secundaria' },
+                { id: 'EKZ_OFICINA_006', name: 'Área Oficinas', description: 'Zona administrativa' },
+                { id: 'EKZ_SALIDA_EMERG_007', name: 'Salida Emergencia', description: 'Salida de emergencia' },
+                { id: 'EKZ_PATIO_008', name: 'Patio Maniobras', description: 'Área de carga y descarga' },
+                { id: 'EKZ_VIGILANCIA_009', name: 'Puesto Vigilancia', description: 'Caseta de vigilancia' },
+                { id: 'EKZ_SALIDA_010', name: 'Salida Principal', description: 'Control de salida' }
+            ]
+        };
+        // ===============================================
+        // ⏰ FUNCIONES DE TIEMPO Y TURNO
+        // ===============================================
+        function detectCurrentTurn() {
+            const now = new Date();
+            const hour = now.getHours();
+            const minute = now.getMinutes();
+            const currentTime = hour + (minute / 60);
+
+            if (currentTime >= 7.5 && currentTime < 19.5) {
+                return {
+                    name: 'diurno',
+                    display: '🌅 Turno Diurno (07:30 - 19:30)',
+                    icon: '🌅'
+                };
+            } else {
+                return {
+                    name: 'nocturno',
+                    display: '🌙 Turno Nocturno (19:30 - 07:30)',
+                    icon: '🌙'
+                };
+            }
+        }
+
+        function updateCurrentTime() {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString('es-ES', { 
+                hour: '2-digit', 
+                minute: '2-digit' 
+            });
+            
+            const currentTimeEl = document.getElementById('currentTime');
+            if (currentTimeEl) {
+                currentTimeEl.textContent = timeString;
+            }
+
+            const turn = detectCurrentTurn();
+            const currentTurnEl = document.getElementById('currentTurn');
+            if (currentTurnEl) {
+                currentTurnEl.textContent = turn.display;
+            }
+
+            return turn;
+        }
+
+        // ===============================================
+        // 🚪 FUNCIONES DE NAVEGACIÓN
+        // ===============================================
+        function selectRole(role) {
+            if (role === 'guard') {
+                document.getElementById('roleScreen').classList.add('hidden');
+                document.getElementById('plantScreen').classList.remove('hidden');
+                updateCurrentTime();
+                setInterval(updateCurrentTime, 60000);
+            } else if (role === 'supervisor') {
+                document.getElementById('roleScreen').classList.add('hidden');
+                document.getElementById('passwordScreen').classList.remove('hidden');
+            }
+        }
+
+        function verifyPassword() {
+            const password = document.getElementById('passwordInput').value;
+            const correctPassword = 'salomec4';
+            
+            if (password === correctPassword) {
+                document.getElementById('passwordScreen').classList.add('hidden');
+                document.getElementById('supervisorDashboard').classList.remove('hidden');
+                
+                setTimeout(() => {
+                    loadDashboardData();
+                }, 100);
+            } else {
+                document.getElementById('passwordError').style.display = 'block';
+                document.getElementById('passwordInput').value = '';
+            }
+        }
+
+        function checkPassword(event) {
+            if (event.key === 'Enter') {
+                verifyPassword();
+            }
+        }
+
+        function selectPlant(plant) {
+            currentPlant = plant;
+            const turn = updateCurrentTime();
+            currentTurn = turn.name;
+            
+            document.getElementById('plantScreen').classList.add('hidden');
+            document.getElementById('roundsScreen').classList.remove('hidden');
+            
+            const plantTitle = document.getElementById('plantTitle');
+            const turnDisplay = document.getElementById('turnDisplay');
+            
+            if (plant === 'matriz') {
+                plantTitle.textContent = '🏢 MATRIZ';
+            } else {
+                plantTitle.textContent = '🏭 EKZOTIKART';
+            }
+            
+            turnDisplay.textContent = turn.display;
+            
+            loadPlantLocations();
+            loadRoundsHistory();
+        }
+
+        function goBack() {
+            // NUEVO: Limpiar scanner al regresar
+            if (scanningActive) {
+                cancelQRScan();
+            }
+            
+            document.querySelectorAll('.card, .dashboard').forEach(el => {
+                el.classList.add('hidden');
+            });
+            
+            document.getElementById('roleScreen').classList.remove('hidden');
+            
+            document.getElementById('passwordInput').value = '';
+            document.getElementById('passwordError').style.display = 'none';
+        }
+
+        function goBackToPlant() {
+            document.getElementById('roundsScreen').classList.add('hidden');
+            document.getElementById('plantScreen').classList.remove('hidden');
+            
+            // NUEVO: Limpiar scanner
+            if (scanningActive) {
+                cancelQRScan();
+            }
+            
+            if (currentRound) {
+                finishRound();
+            }
+        }
+
+        function logout() {
+            goBack();
+        }
+
+        // ===============================================
+        // 📍 FUNCIONES DE UBICACIONES (SIN CÓDIGOS QR VISIBLES)
+        // ===============================================
+        function loadPlantLocations() {
+            const locations = plantLocations[currentPlant];
+            const grid = document.getElementById('locationsGrid');
+            
+            // NUEVO: Tarjetas sin códigos QR visibles para evitar trampas
+            grid.innerHTML = locations.map(location => `
+                <div class="location-card" id="card-${location.id}">
+                    <h4>${location.name}</h4>
+                    <p><small>${location.description}</small></p>
+                    <div style="margin-top: 10px;">
+                        <span class="status" id="status-${location.id}">⏳ Pendiente</span>
+                    </div>
+                </div>
+            `).join('');
+
+            const locationSelect = document.getElementById('observationLocation');
+            locationSelect.innerHTML = '<option value="">Seleccionar ubicación...</option>' +
+                locations.map(loc => `<option value="${loc.id}">${loc.name}</option>`).join('');
+        }
+
+        // ===============================================
+        // 🚀 FUNCIONES DE RECORRIDO
+        // ===============================================
+        function startRound() {
+            currentRound = {
+                id: Date.now().toString(),
+                plant: currentPlant,
+                turn: currentTurn,
+                startTime: new Date(),
+                locations: {},
+                incidents: [],
+                completed: false
+            };
+
+            roundStartTime = Date.now();
+            
+            document.getElementById('startRoundBtn').classList.add('hidden');
+            document.getElementById('scanQRBtn').classList.remove('hidden');
+            document.getElementById('finishRoundBtn').classList.remove('hidden');
+            document.getElementById('progressContainer').classList.remove('hidden');
+            document.getElementById('reportIncidentBtn').classList.remove('hidden');
+            
+            startRoundTimer();
+            updateProgress();
+            
+            // NUEVO: Vibración de confirmación en móviles
+            if (navigator.vibrate) {
+                navigator.vibrate([100, 50, 100]);
+            }
+        }
+
+        function startRoundTimer() {
+            roundTimer = setInterval(() => {
+                const elapsed = Date.now() - roundStartTime;
+                const minutes = Math.floor(elapsed / 60000);
+                const seconds = Math.floor((elapsed % 60000) / 1000);
+                document.getElementById('elapsedTime').textContent = 
+                    `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            }, 1000);
+        }
+
+        // ===============================================
+        // 📱 SCANNER QR COMPLETAMENTE CORREGIDO Y FUNCIONAL
+        // ===============================================
+        let debugMode = false;
+        let frameCount = 0;
+
+        function toggleDebugInfo() {
+            debugMode = !debugMode;
+            const debugInfo = document.getElementById('debugInfo');
+            debugInfo.style.display = debugMode ? 'block' : 'none';
+        }
+
+        function showQRScanner() {
+            console.log('🚀 Iniciando QR Scanner...');
+            
+            // Mostrar sección de scanner
+            document.getElementById('qrScannerSection').classList.remove('hidden');
+            
+            // Ocultar botones temporalmente para reordenar
+            document.getElementById('scanQRBtn').classList.add('hidden');
+            document.getElementById('finishRoundBtn').classList.add('hidden');
+            
+            // Mostrar indicador de carga
+            document.getElementById('cameraLoading').classList.remove('hidden');
+            document.getElementById('qrScannerContent').classList.add('hidden');
+            
+            // CORREGIDO: Verificar jsQR antes de continuar
+            checkJsQRAvailability();
+        }
+
+        // CORREGIDO: Función principal con URLs actualizadas y robusta
+        function checkJsQRAvailability() {
+            updateLoadingMessage('🔍 Verificando jsQR...');
+            
+            // NUEVO: Siempre cargar jsQR dinámicamente para máxima compatibilidad
+            console.log('🔄 Cargando jsQR dinámicamente...');
+            updateLoadingMessage('📦 Descargando librería QR...');
+            
+            // Eliminar script previo si existe
+            const existingScript = document.querySelector('script[src*="jsQR"]');
+            if (existingScript) {
+                existingScript.remove();
+                console.log('🗑️ Script jsQR anterior eliminado');
+            }
+            
+            // Crear nuevo script con URL más confiable
+            const script = document.createElement('script');
+            script.src = 'https://unpkg.com/jsqr@1.4.0/dist/jsQR.js'; // URL alternativa más confiable
+            script.async = false; // Carga sincrónica
+            script.crossOrigin = 'anonymous'; // CORS
+            
+            script.onload = () => {
+                console.log('📦 Script jsQR descargado exitosamente');
+                updateLoadingMessage('🔍 Verificando librería...');
+                
+                // Verificar múltiples veces que jsQR esté disponible
+                let attempts = 0;
+                const maxAttempts = 15;
+                
+                const checkJsQR = () => {
+                    attempts++;
+                    console.log(`🔍 Verificación ${attempts}/${maxAttempts}: typeof jsQR =`, typeof jsQR);
+                    
+                    if (typeof jsQR !== 'undefined' && typeof jsQR === 'function') {
+                        console.log('✅ jsQR confirmado y disponible');
+                        updateDebugStatus('jsqrStatus', '✅ OK');
+                        updateLoadingMessage('✅ Librería QR lista');
+                        
+                        // Pequeña pausa para asegurar estabilidad
+                        setTimeout(() => {
+                            initQRVideo();
+                        }, 500);
+                        
+                    } else if (attempts < maxAttempts) {
+                        console.log(`⏳ jsQR aún no disponible, reintentando en 200ms...`);
+                        setTimeout(checkJsQR, 200);
+                        
+                    } else {
+                        console.error('❌ jsQR no se pudo cargar después de múltiples intentos');
+                        tryAlternativeLibrary();
+                    }
+                };
+                
+                // Comenzar verificación después de una pausa
+                setTimeout(checkJsQR, 300);
+            };
+            
+            script.onerror = (error) => {
+                console.error('❌ Error descargando jsQR desde unpkg:', error);
+                tryAlternativeLibrary();
+            };
+            
+            // Timeout de seguridad más largo
+            setTimeout(() => {
+                if (typeof jsQR === 'undefined') {
+                    console.error('⏰ Timeout cargando jsQR desde unpkg');
+                    tryAlternativeLibrary();
+                }
+            }, 15000);
+            
+            // Agregar script al head
+            document.head.appendChild(script);
+            console.log('📤 Script jsQR agregado al DOM');
+        }
+
+        function tryAlternativeLibrary() {
+            console.log('🔄 Intentando URL alternativa de jsQR...');
+            updateLoadingMessage('🔄 Probando fuente alternativa...');
+            
+            // Eliminar script previo
+            const existingScript = document.querySelector('script[src*="jsQR"]');
+            if (existingScript) {
+                existingScript.remove();
+            }
+            
+            // Probar con CDN diferente
+            const script = document.createElement('script');
+            script.src = 'https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js';
+            script.async = false;
+            script.crossOrigin = 'anonymous';
+            
+            script.onload = () => {
+                console.log('📦 jsQR desde CDN alternativo descargado');
+                updateLoadingMessage('🔍 Verificando CDN alternativo...');
+                
+                setTimeout(() => {
+                    if (typeof jsQR !== 'undefined') {
+                        console.log('✅ jsQR funcionando desde CDN alternativo');
+                        updateDebugStatus('jsqrStatus', '✅ OK (Alt)');
+                        initQRVideo();
+                    } else {
+                        console.error('❌ CDN alternativo también falló');
+                        tryFinalAlternative();
+                    }
+                }, 1000);
+            };
+            
+            script.onerror = () => {
+                console.error('❌ También falló el CDN alternativo');
+                tryFinalAlternative();
+            };
+            
+            document.head.appendChild(script);
+        }
+
+        function tryFinalAlternative() {
+            console.log('🔄 Intentando última URL alternativa...');
+            updateLoadingMessage('🔄 Última alternativa...');
+            
+            // Eliminar script previo
+            const existingScript = document.querySelector('script[src*="jsQR"]');
+            if (existingScript) {
+                existingScript.remove();
+            }
+            
+            // Última alternativa con cdnjs
+            const script = document.createElement('script');
+            script.src = 'https://cdnjs.cloudflare.com/ajax/libs/jsqr/1.4.0/jsQR.min.js';
+            script.async = false;
+            script.crossOrigin = 'anonymous';
+            
+            script.onload = () => {
+                console.log('📦 jsQR desde cdnjs descargado');
+                
+                setTimeout(() => {
+                    if (typeof jsQR !== 'undefined') {
+                        console.log('✅ jsQR funcionando desde cdnjs');
+                        updateDebugStatus('jsqrStatus', '✅ OK (CDNJS)');
+                        initQRVideo();
+                    } else {
+                        console.error('❌ Todas las fuentes fallaron');
+                        showJsQRError();
+                    }
+                }, 1000);
+            };
+            
+            script.onerror = () => {
+                console.error('❌ CDNJS también falló - Todas las fuentes agotadas');
+                showJsQRError();
+            };
+            
+            document.head.appendChild(script);
+        }
+
+        function showJsQRError() {
+            console.error('🚫 No se pudo cargar jsQR desde ninguna fuente');
+            document.getElementById('cameraLoading').classList.add('hidden');
+            document.getElementById('qrScannerContent').classList.remove('hidden');
+            
+            const container = document.getElementById('qrVideoContainer');
+            container.innerHTML = `
+                <div style="padding: 40px; text-align: center; background: #ffebee; border-radius: 15px;">
+                    <h4 style="color: #c62828; margin-bottom: 15px;">❌ Error del Sistema</h4>
+                    <p style="color: #666;">No se pudo cargar la librería de códigos QR</p>
+                    <p style="color: #666; font-size: 0.9rem;">Verifica tu conexión a internet y recarga la página</p>
+                    <button class="btn btn-warning" onclick="retryQRSystem()" style="margin-top: 15px;">
+                        🔄 Reintentar Sistema
+                    </button>
+                </div>
+            `;
+            
+            updateScanStatus('❌ Error del sistema', 'error');
+            updateDebugStatus('jsqrStatus', '❌ Failed');
+        }
+
+        function retryQRSystem() {
+            console.log('🔄 Reiniciando sistema QR completo...');
+            document.getElementById('cameraLoading').classList.remove('hidden');
+            document.getElementById('qrScannerContent').classList.add('hidden');
+            
+            // Recrear elementos
+            const container = document.getElementById('qrVideoContainer');
+            container.innerHTML = `
+                <video id="qrVideo" autoplay playsinline muted></video>
+                <div class="qr-overlay"></div>
+            `;
+            
+            // Reset variables
+            frameCount = 0;
+            updateDebugStatus('frameCount', '0');
+            updateDebugStatus('videoStatus', '-');
+            updateDebugStatus('jsqrStatus', '-');
+            
+            setTimeout(() => {
+                checkJsQRAvailability();
+            }, 1000);
+        }
+
+        function updateLoadingMessage(message) {
+            const loadingEl = document.querySelector('#cameraLoading p');
+            if (loadingEl) {
+                loadingEl.textContent = message;
+            }
+            console.log('📝 Loading:', message);
+        }
+
+        function updateDebugStatus(elementId, status) {
+            if (debugMode) {
+                const el = document.getElementById(elementId);
+                if (el) el.textContent = status;
+            }
+        }
+
+        // NUEVA: Función para verificar estado de jsQR (debug)
+        function debugJsQR() {
+            console.log('🔧 DEBUG jsQR:');
+            console.log('- typeof jsQR:', typeof jsQR);
+            console.log('- window.jsQR:', typeof window.jsQR);
+            console.log('- Scripts cargados:', document.querySelectorAll('script[src*="jsQR"]'));
+            
+            // Intentar llamar jsQR si existe
+            if (typeof jsQR === 'function') {
+                console.log('- jsQR es función: ✅');
+                try {
+                    // Crear datos de prueba
+                    const testData = new Uint8ClampedArray(4);
+                    const result = jsQR(testData, 1, 1);
+                    console.log('- jsQR funciona: ✅', result);
+                } catch (e) {
+                    console.log('- Error ejecutando jsQR:', e);
+                }
+            } else {
+                console.log('- jsQR NO es función: ❌');
+            }
+        }
+        function initQRVideo() {
+            updateLoadingMessage('📷 Iniciando cámara...');
+            
+            qrVideo = document.getElementById('qrVideo');
+            
+            if (!qrVideo) {
+                console.error('❌ Video element not found');
+                showQRError('Elemento de video no encontrado');
+                return;
+            }
+            
+            // CORREGIDO: Constraints más compatibles
+            const constraints = {
+                video: {
+                    facingMode: 'environment',
+                    width: { ideal: 640, min: 320 },
+                    height: { ideal: 480, min: 240 }
+                }
+            };
+            
+            console.log('📷 Solicitando acceso a cámara...');
+            updateLoadingMessage('📷 Solicitando permisos de cámara...');
+            
+            navigator.mediaDevices.getUserMedia(constraints)
+                .then(stream => {
+                    console.log('✅ Cámara obtenida exitosamente');
+                    
+                    qrStream = stream;
+                    qrVideo.srcObject = stream;
+                    
+                    updateDebugStatus('videoStatus', '✅ OK');
+                    updateLoadingMessage('📹 Configurando video...');
+                    
+                    // CORREGIDO: Mejor manejo de eventos de video
+                    qrVideo.addEventListener('loadedmetadata', () => {
+                        console.log('📹 Video metadata cargada');
+                        console.log(`Video size: ${qrVideo.videoWidth}x${qrVideo.videoHeight}`);
+                        
+                        qrVideo.play().then(() => {
+                            console.log('▶️ Video iniciado');
+                            updateLoadingMessage('✅ Video iniciado, preparando scanner...');
+                            
+                            // Esperar un poco más para asegurar que el video esté estable
+                            setTimeout(() => {
+                                document.getElementById('cameraLoading').classList.add('hidden');
+                                document.getElementById('qrScannerContent').classList.remove('hidden');
+                                
+                                startQRDetection();
+                            }, 1500);
+                            
+                        }).catch(err => {
+                            console.error('❌ Error al reproducir video:', err);
+                            showQRError('Error al iniciar video');
+                        });
+                    });
+                    
+                    qrVideo.addEventListener('error', (err) => {
+                        console.error('❌ Error en video element:', err);
+                        showQRError('Error en elemento de video');
+                    });
+                    
+                })
+                .catch(error => {
+                    console.error('❌ Error de cámara:', error);
+                    let errorMsg = 'Error desconocido de cámara';
+                    
+                    if (error.name === 'NotAllowedError') {
+                        errorMsg = 'Permisos de cámara denegados';
+                    } else if (error.name === 'NotFoundError') {
+                        errorMsg = 'No se encontró cámara disponible';
+                    } else if (error.name === 'NotReadableError') {
+                        errorMsg = 'Cámara en uso por otra aplicación';
+                    } else if (error.name === 'OverconstrainedError') {
+                        errorMsg = 'Configuración de cámara no soportada';
+                    }
+                    
+                    updateDebugStatus('videoStatus', '❌ Error');
+                    showQRError(errorMsg);
+                });
+        }
+
+        function startQRDetection() {
+            // CORREGIDO: Verificación doble de jsQR
+            if (typeof jsQR === 'undefined') {
+                console.error('❌ jsQR no disponible para detección');
+                showQRError('Librería QR no disponible');
+                return;
+            }
+            
+            scanningActive = true;
+            frameCount = 0;
+            
+            console.log('🔍 Iniciando detección QR...');
+            updateScanStatus('🔍 Buscando código QR...', 'scanning');
+            
+            // CORREGIDO: Canvas fuera del loop para mejor rendimiento
+            const canvas = document.createElement('canvas');
+            const context = canvas.getContext('2d');
+            
+            function detectQR() {
+                if (!scanningActive || !qrVideo) {
+                    console.log('🛑 Detección QR detenida');
+                    return;
+                }
+                
+                frameCount++;
+                updateDebugStatus('frameCount', frameCount);
+                
+                try {
+                    // CORREGIDO: Verificaciones más robustas
+                    if (qrVideo.readyState === qrVideo.HAVE_ENOUGH_DATA && 
+                        qrVideo.videoWidth > 0 && 
+                        qrVideo.videoHeight > 0) {
+                        
+                        // Configurar canvas solo si cambió el tamaño
+                        if (canvas.width !== qrVideo.videoWidth || canvas.height !== qrVideo.videoHeight) {
+                            canvas.width = qrVideo.videoWidth;
+                            canvas.height = qrVideo.videoHeight;
+                            console.log(`📐 Canvas redimensionado: ${canvas.width}x${canvas.height}`);
+                        }
+                        
+                        // Capturar frame actual
+                        context.drawImage(qrVideo, 0, 0, canvas.width, canvas.height);
+                        
+                        // Obtener datos de imagen
+                        const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+                        
+                        // CORREGIDO: Detección QR con opciones optimizadas
+                        try {
+                            const qrCode = jsQR(imageData.data, imageData.width, imageData.height, {
+                                inversionAttempts: "dontInvert"
+                            });
+                            
+                            if (qrCode && qrCode.data && scanningActive) {
+                                console.log('🎯 QR Code detectado:', qrCode.data);
+                                processDetectedQR(qrCode.data);
+                                return; // Salir del loop
+                            }
+                        } catch (jsqrError) {
+                            console.error('❌ Error en jsQR:', jsqrError);
+                            // Continuar sin detener el scanner
+                        }
+                    }
+                    
+                    // Continuar detección si está activa
+                    if (scanningActive) {
+                        qrDetectionLoop = requestAnimationFrame(detectQR);
+                    }
+                    
+                } catch (error) {
+                    console.error('❌ Error en loop de detección:', error);
+                    // Continuar a pesar del error
+                    if (scanningActive) {
+                        qrDetectionLoop = requestAnimationFrame(detectQR);
+                    }
+                }
+            }
+            
+            // Iniciar loop de detección
+            qrDetectionLoop = requestAnimationFrame(detectQR);
+            console.log('🔄 Loop de detección iniciado');
+        }
+
+        function processDetectedQR(qrData) {
+            if (!scanningActive) return;
+            
+            console.log('🔄 Procesando QR:', qrData);
+            
+            // Detener scanning inmediatamente
+            scanningActive = false;
+            if (qrDetectionLoop) {
+                cancelAnimationFrame(qrDetectionLoop);
+                qrDetectionLoop = null;
+            }
+            
+            // Limpiar y validar código QR
+            const cleanQR = qrData.trim().toUpperCase();
+            
+            // Validar formato
+            if (!validateQRFormat(cleanQR)) {
+                return;
+            }
+            
+            // Validar planta
+            if (!validateQRPlant(cleanQR)) {
+                return;
+            }
+            
+            // Validar ubicación existente
+            if (!validateQRLocation(cleanQR)) {
+                return;
+            }
+            
+            // Validar que no esté ya visitada
+            if (!validateQRNotVisited(cleanQR)) {
+                return;
+            }
+            
+            // ✅ TODO VÁLIDO - Procesar ubicación
+            processValidQR(cleanQR);
+        }
+
+        function validateQRFormat(qrCode) {
+            if (!qrCode.match(/^(MTZ|EKZ)_[A-Z_]+_\d{3}$/)) {
+                updateScanStatus('❌ Formato de QR inválido', 'error');
+                setTimeout(() => {
+                    showAlert('❌ Código QR No Válido', 'Formato esperado: MTZ_UBICACION_001 o EKZ_UBICACION_001');
+                    restartQRScan();
+                }, 1500);
+                return false;
+            }
+            return true;
+        }
+
+        function validateQRPlant(qrCode) {
+            const plantPrefix = currentPlant === 'matriz' ? 'MTZ' : 'EKZ';
+            if (!qrCode.startsWith(plantPrefix)) {
+                updateScanStatus('❌ QR de planta incorrecta', 'error');
+                setTimeout(() => {
+                    showAlert('❌ Planta Incorrecta', `Esperaba: ${plantPrefix}_...\nDetectado: ${qrCode}\n\nVerifica que estés en la planta correcta.`);
+                    restartQRScan();
+                }, 1500);
+                return false;
+            }
+            return true;
+        }
+
+        function validateQRLocation(qrCode) {
+            const locations = plantLocations[currentPlant];
+            const location = locations.find(loc => loc.id === qrCode);
+            
+            if (!location) {
+                updateScanStatus('❌ Ubicación no registrada', 'error');
+                setTimeout(() => {
+                    showAlert('❌ Ubicación No Encontrada', 'Esta ubicación no está registrada en el sistema.\n\nContacta al administrador.');
+                    restartQRScan();
+                }, 1500);
+                return false;
+            }
+            return true;
+        }
+
+        function validateQRNotVisited(qrCode) {
+            if (currentRound.locations[qrCode]) {
+                updateScanStatus('⚠️ Ubicación ya visitada', 'error');
+                setTimeout(() => {
+                    showAlert('⚠️ Ya Visitada', 'Esta ubicación ya fue registrada en este recorrido.');
+                    restartQRScan();
+                }, 1500);
+                return false;
+            }
+            return true;
+        }
+
+        function processValidQR(qrCode) {
+            console.log('✅ QR válido, procesando ubicación:', qrCode);
+            
+            updateScanStatus('✅ ¡Ubicación registrada!', 'success');
+            
+            // NUEVO: Efectos de éxito
+            if (navigator.vibrate) {
+                navigator.vibrate([200, 100, 200]); // Vibración de éxito
+            }
+            
+            // Efecto visual de éxito
+            const scannerSection = document.getElementById('qrScannerSection');
+            scannerSection.classList.add('qr-success');
+            
+            setTimeout(() => {
+                scannerSection.classList.remove('qr-success');
+                processQRScan(qrCode);
+                cancelQRScan();
+            }, 2000);
+        }
+
+        function processQRScan(locationId) {
+            console.log('📍 Registrando ubicación:', locationId);
+            
+            currentRound.locations[locationId] = {
+                timestamp: new Date(),
+                observations: [],
+                photos: []
+            };
+            
+            // Actualizar tarjeta visual
+            const card = document.getElementById(`card-${locationId}`);
+            const status = document.getElementById(`status-${locationId}`);
+            
+            if (card && status) {
+                card.classList.add('completed');
+                status.textContent = '✅ Completado';
+                status.style.color = '#28a745';
+            }
+            
+            // Actualizar progreso
+            updateProgress();
+            
+            // Sonido de éxito
+            playQRSuccessSound();
+            
+            console.log('✅ Ubicación registrada exitosamente');
+        }
+
+        function restartQRScan() {
+            if (!scanningActive) {
+                console.log('🔄 Reiniciando scanner...');
+                scanningActive = true;
+                updateScanStatus('🔍 Buscando código QR...', 'scanning');
+                startQRDetection();
+            }
+        }
+
+        function cancelQRScan() {
+            console.log('🛑 Cancelando QR Scanner...');
+            
+            // Detener scanning
+            scanningActive = false;
+            if (qrDetectionLoop) {
+                cancelAnimationFrame(qrDetectionLoop);
+                qrDetectionLoop = null;
+            }
+            
+            // Detener cámara
+            if (qrStream) {
+                qrStream.getTracks().forEach(track => {
+                    track.stop();
+                    console.log('🔒 Track de cámara detenido:', track.kind);
+                });
+                qrStream = null;
+            }
+            
+            // Limpiar video
+            if (qrVideo) {
+                qrVideo.srcObject = null;
+            }
+            
+            // Ocultar scanner y restaurar botones
+            document.getElementById('qrScannerSection').classList.add('hidden');
+            document.getElementById('scanQRBtn').classList.remove('hidden');
+            document.getElementById('finishRoundBtn').classList.remove('hidden');
+            
+            // Reset debug
+            frameCount = 0;
+            updateDebugStatus('frameCount', '0');
+            updateDebugStatus('videoStatus', '-');
+            updateDebugStatus('jsqrStatus', '-');
+            
+            console.log('✅ QR Scanner cancelado completamente');
+        }
+
+        function updateScanStatus(message, type) {
+            const statusEl = document.getElementById('scanStatus');
+            if (statusEl) {
+                statusEl.textContent = message;
+                statusEl.className = `scan-status ${type}`;
+            }
+        }
+
+        function showQRError(message) {
+            document.getElementById('cameraLoading').classList.add('hidden');
+            document.getElementById('qrScannerContent').classList.remove('hidden');
+            
+            const container = document.getElementById('qrVideoContainer');
+            container.innerHTML = `
+                <div style="padding: 40px; text-align: center; background: #ffebee; border-radius: 15px;">
+                    <h4 style="color: #c62828; margin-bottom: 15px;">❌ Error de Cámara</h4>
+                    <p style="color: #666;">${message}</p>
+                    <button class="btn btn-warning" onclick="retryQRCamera()" style="margin-top: 15px;">
+                        🔄 Reintentar
+                    </button>
+                </div>
+            `;
+            
+            updateScanStatus('❌ Error de cámara', 'error');
+            updateDebugStatus('videoStatus', '❌ Error');
+        }
+
+        function retryQRCamera() {
+            document.getElementById('cameraLoading').classList.remove('hidden');
+            document.getElementById('qrScannerContent').classList.add('hidden');
+            
+            // Recrear elemento de video
+            const container = document.getElementById('qrVideoContainer');
+            container.innerHTML = `
+                <video id="qrVideo" autoplay playsinline muted></video>
+                <div class="qr-overlay"></div>
+            `;
+            
+            setTimeout(() => {
+                initQRVideo();
+            }, 1000);
+        }
+
+        function updateProgress() {
+    const total = plantLocations[currentPlant].length;
+    const completed = Object.keys(currentRound.locations).length;
+    const percentage = (completed / total) * 100;
+    
+    document.getElementById('progressFill').style.width = `${percentage}%`;
+    document.getElementById('completedLocations').textContent = completed;
+    document.getElementById('totalLocations').textContent = total;
+    
+    // NUEVO: Indicador siempre flexible
+    const progressContainer = document.getElementById('progressContainer');
+    const existingIndicator = progressContainer.querySelector('.round-type-indicator');
+    if (existingIndicator) {
+        existingIndicator.remove();
+    }
+    
+    const indicator = document.createElement('p');
+    indicator.className = 'round-type-indicator';
+    indicator.style.cssText = 'font-size: 0.9rem; color: #1976d2; margin-top: 10px;';
+    indicator.innerHTML = '🔄 <strong>Recorrido Flexible</strong> - Sin restricciones, escanea las ubicaciones necesarias';
+    
+    progressContainer.appendChild(indicator);
+}
+
+        function finishRound() {
+    if (!currentRound) return;
+    
+    // Limpiar scanner si está activo
+    if (scanningActive) {
+        cancelQRScan();
+    }
+    
+    const completedLocations = Object.keys(currentRound.locations).length;
+    const totalLocations = plantLocations[currentPlant].length;
+    
+    // CORREGIDO: Sin restricciones - Cualquier cantidad de ubicaciones es válida
+    currentRound.endTime = new Date();
+    currentRound.completed = true;
+    currentRound.completionPercentage = Math.round((completedLocations / totalLocations) * 100);
+    
+    if (roundTimer) {
+        clearInterval(roundTimer);
+        roundTimer = null;
+    }
+    
+    const rounds = JSON.parse(localStorage.getItem('rounds') || '[]');
+    rounds.push(currentRound);
+    localStorage.setItem('rounds', JSON.stringify(rounds));
+    
+    const allIncidents = JSON.parse(localStorage.getItem('incidents') || '[]');
+    if (currentRound.incidents && currentRound.incidents.length > 0) {
+        allIncidents.push(...currentRound.incidents);
+        localStorage.setItem('incidents', JSON.stringify(allIncidents));
+    }
+    
+    document.getElementById('startRoundBtn').classList.remove('hidden');
+    document.getElementById('scanQRBtn').classList.add('hidden');
+    document.getElementById('finishRoundBtn').classList.add('hidden');
+    document.getElementById('progressContainer').classList.add('hidden');
+    document.getElementById('reportIncidentBtn').classList.add('hidden');
+    
+    currentRound = null;
+    loadRoundsHistory();
+    
+    // Efectos de finalización
+    if (navigator.vibrate) {
+        navigator.vibrate([300, 200, 300, 200, 300]);
+    }
+    
+    // NUEVO: Mensaje personalizado según ubicaciones visitadas
+    const percentage = Math.round((completedLocations / totalLocations) * 100);
+    let message = `Recorrido guardado exitosamente.\n\n📍 Ubicaciones visitadas: ${completedLocations}/${totalLocations} (${percentage}%)`;
+    
+    if (completedLocations === 0) {
+        message = 'Recorrido guardado sin ubicaciones visitadas.';
+    } else if (percentage === 100) {
+        message += '\n\n🎉 ¡Recorrido completo!';
+    }
+    
+    showAlert('✅ Recorrido Finalizado', message);
+}
+        // ===============================================
+        // 🔊 FUNCIONES DE SONIDO Y EFECTOS
+        // ===============================================
+        function playQRSuccessSound() {
+            try {
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                
+                // Sonido de éxito más elaborado
+                const oscillator1 = audioContext.createOscillator();
+                const oscillator2 = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                
+                oscillator1.connect(gainNode);
+                oscillator2.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                
+                oscillator1.frequency.setValueAtTime(600, audioContext.currentTime);
+                oscillator1.frequency.setValueAtTime(800, audioContext.currentTime + 0.1);
+                
+                oscillator2.frequency.setValueAtTime(800, audioContext.currentTime);
+                oscillator2.frequency.setValueAtTime(1000, audioContext.currentTime + 0.1);
+                
+                gainNode.gain.setValueAtTime(0.2, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+                
+                oscillator1.start(audioContext.currentTime);
+                oscillator1.stop(audioContext.currentTime + 0.3);
+                oscillator2.start(audioContext.currentTime);
+                oscillator2.stop(audioContext.currentTime + 0.3);
+                
+            } catch (e) {
+                console.log('🔇 Audio no disponible');
+            }
+        }
+
+        function showAlert(title, message) {
+            // Versión mejorada de alert
+            if (typeof title === 'string' && typeof message === 'string') {
+                alert(title + '\n\n' + message);
+            } else {
+                alert(title);
+            }
+        }
+
+        // ===============================================
+        // 💬 FUNCIONES DE MODAL Y OBSERVACIONES
+        // ===============================================
+        function openObservationModal(locationId = null) {
+            isIncidentMode = locationId === null;
+            
+            const modal = document.getElementById('observationModal');
+            const title = document.getElementById('modalTitle');
+            const incidentGroup = document.getElementById('incidentTypeGroup');
+            const locationSelect = document.getElementById('observationLocation');
+            
+            if (isIncidentMode) {
+                title.textContent = '🚨 Reportar Incidencia';
+                incidentGroup.classList.remove('hidden');
+                locationSelect.value = '';
+            } else {
+                title.textContent = '📝 Observaciones de Ubicación';
+                incidentGroup.classList.add('hidden');
+                locationSelect.value = locationId;
+            }
+            
+            document.getElementById('observationText').value = '';
+            document.getElementById('incidentType').value = '';
+            resetCamera();
+            
+            modal.style.display = 'block';
+        }
+
+        function openIncidentModal() {
+            openObservationModal(null);
+        }
+
+        function closeModal() {
+            document.getElementById('observationModal').style.display = 'none';
+            resetCamera();
+        }
+
+        function saveObservation() {
+            const locationId = document.getElementById('observationLocation').value;
+            const text = document.getElementById('observationText').value.trim();
+            const incidentType = document.getElementById('incidentType').value;
+            
+            if (!locationId) {
+                showAlert('⚠️ Ubicación requerida', 'Selecciona una ubicación para continuar');
+                return;
+            }
+            
+            if (isIncidentMode && !incidentType) {
+                showAlert('⚠️ Tipo requerido', 'Selecciona el tipo de incidencia');
+                return;
+            }
+            
+            const observation = {
+                locationId,
+                text: text || 'Sin observaciones adicionales',
+                timestamp: new Date(),
+                type: isIncidentMode ? 'incident' : 'observation',
+                incidentType: incidentType || null,
+                plant: currentPlant,
+                turn: currentTurn,
+                photoUrl: capturedPhotoUrl || null,
+                hasPhoto: !!capturedPhotoUrl
+            };
+            
+            if (isIncidentMode) {
+                const incidents = JSON.parse(localStorage.getItem('incidents') || '[]');
+                incidents.push(observation);
+                localStorage.setItem('incidents', JSON.stringify(incidents));
+                
+                checkCriticalIncident(observation);
+                
+                if (currentRound) {
+                    if (!currentRound.incidents) currentRound.incidents = [];
+                    currentRound.incidents.push(observation);
+                }
+                
+                showAlert('✅ Incidencia registrada', 'Incidencia reportada correctamente en el sistema');
+            } else {
+                if (currentRound && currentRound.locations[locationId]) {
+                    currentRound.locations[locationId].observations.push(observation);
+                    if (capturedPhotoUrl) {
+                        currentRound.locations[locationId].photos.push(capturedPhotoUrl);
+                    }
+                }
+                
+                showAlert('✅ Observación guardada', 'Observación registrada exitosamente');
+            }
+            
+            closeModal();
+        }
+        // ===============================================
+        // 📷 FUNCIONES DE CÁMARA PARA EVIDENCIAS
+        // ===============================================
+        function startCamera() {
+            navigator.mediaDevices.getUserMedia({ 
+                video: { facingMode: 'environment' } 
+            }).then(stream => {
+                cameraStream = stream;
+                const video = document.getElementById('cameraPreview');
+                video.srcObject = stream;
+                video.style.display = 'block';
+                
+                document.getElementById('captureBtn').classList.remove('hidden');
+            }).catch(error => {
+                showAlert('❌ Error de cámara', 'No se pudo acceder a la cámara para evidencias');
+            });
+        }
+
+        function capturePhoto() {
+            const video = document.getElementById('cameraPreview');
+            const canvas = document.getElementById('photoCanvas');
+            const ctx = canvas.getContext('2d');
+            
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            ctx.drawImage(video, 0, 0);
+            
+            canvas.toBlob(blob => {
+                const imageUrl = URL.createObjectURL(blob);
+                capturedPhotoUrl = imageUrl;
+                
+                const img = document.getElementById('capturedPhoto');
+                img.src = imageUrl;
+                img.style.display = 'block';
+                
+                video.style.display = 'none';
+                document.getElementById('captureBtn').classList.add('hidden');
+                document.getElementById('retakeBtn').classList.remove('hidden');
+                
+                if (cameraStream) {
+                    cameraStream.getTracks().forEach(track => track.stop());
+                }
+            }, 'image/jpeg', 0.8);
+        }
+
+        function retakePhoto() {
+            resetCamera();
+            startCamera();
+        }
+
+        function resetCamera() {
+            const video = document.getElementById('cameraPreview');
+            const img = document.getElementById('capturedPhoto');
+            
+            video.style.display = 'none';
+            img.style.display = 'none';
+            
+            document.getElementById('captureBtn').classList.add('hidden');
+            document.getElementById('retakeBtn').classList.add('hidden');
+            
+            if (cameraStream) {
+                cameraStream.getTracks().forEach(track => track.stop());
+                cameraStream = null;
+            }
+            
+            capturedPhotoUrl = null;
+        }
+
+        // ===============================================
+        // 📝 HISTORIAL DE RECORRIDOS
+        // ===============================================
+        function loadRoundsHistory() {
+            const rounds = JSON.parse(localStorage.getItem('rounds') || '[]');
+            const plantRounds = rounds.filter(round => round.plant === currentPlant);
+            
+            const historyEl = document.getElementById('roundsHistory');
+            
+            if (plantRounds.length === 0) {
+                historyEl.innerHTML = '<p>📋 No hay recorridos registrados para esta planta</p>';
+                return;
+            }
+            
+            historyEl.innerHTML = plantRounds.slice(-5).reverse().map(round => {
+                const completedLocations = Object.keys(round.locations).length;
+                const totalLocations = plantLocations[round.plant].length;
+                const percentage = Math.round((completedLocations / totalLocations) * 100);
+                const incidentsCount = round.incidents ? round.incidents.length : 0;
+                
+                return `
+                    <div style="background: #f8f9fa; padding: 15px; margin: 10px 0; border-radius: 8px;">
+                        <strong>${round.turn === 'diurno' ? '🌅' : '🌙'} ${new Date(round.startTime).toLocaleString('es-ES')}</strong><br>
+                        <small>
+                            📍 ${completedLocations}/${totalLocations} ubicaciones (${percentage}%)<br>
+                            🚨 ${incidentsCount} incidencias reportadas<br>
+                            ⏱️ ${round.completed ? 'Completado' : 'En progreso'}
+                        </small>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // ===============================================
+        // 📊 DASHBOARD DE SUPERVISIÓN
+        // ===============================================
+        function loadDashboardData() {
+            const rounds = JSON.parse(localStorage.getItem('rounds') || '[]');
+            const incidents = JSON.parse(localStorage.getItem('incidents') || '[]');
+            
+            document.getElementById('totalRounds').textContent = rounds.length;
+            document.getElementById('totalIncidents').textContent = incidents.length;
+            document.getElementById('matrizRounds').textContent = rounds.filter(r => r.plant === 'matriz').length;
+            document.getElementById('ekzotikRounds').textContent = rounds.filter(r => r.plant === 'ekzotikart').length;
+            
+            loadIncidentsList(incidents);
+        }
+
+        function loadIncidentsList(incidents) {
+            const incidentsList = document.getElementById('incidentsList');
+            
+            if (incidents.length === 0) {
+                incidentsList.innerHTML = '<p>🚨 No hay incidencias reportadas</p>';
+                return;
+            }
+            
+            incidentsList.innerHTML = incidents.slice(-10).reverse().map(incident => {
+                const typeClass = `type-${incident.incidentType || 'general'}`;
+                const plantName = incident.plant === 'matriz' ? 'MATRIZ' : 'EKZOTIKART';
+                const turnIcon = incident.turn === 'diurno' ? '🌅' : '🌙';
+                const location = plantLocations[incident.plant]?.find(loc => loc.id === incident.locationId);
+                const locationName = location ? location.name : incident.locationId;
+                
+                return `
+                    <div class="incident-item">
+                        <div class="incident-header">
+                            <span class="incident-type ${typeClass}">
+                                ${incident.incidentType?.toUpperCase() || 'OBSERVACIÓN'}
+                            </span>
+                            <small>${turnIcon} ${plantName}</small>
+                        </div>
+                        <p><strong>📍 ${locationName}</strong></p>
+                        <p>${incident.text}</p>
+                        <small>🕐 ${new Date(incident.timestamp).toLocaleString('es-ES')}</small>
+                        ${incident.hasPhoto ? '<p>📸 Con evidencia fotográfica</p>' : ''}
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function showDashboardTab(tab, event) {
+            document.querySelectorAll('.dashboard-content').forEach(el => {
+                el.classList.add('hidden');
+            });
+            
+            document.querySelectorAll('.dashboard-tab').forEach(el => {
+                el.classList.remove('active');
+            });
+            
+            document.getElementById(`${tab}Tab`).classList.remove('hidden');
+            
+            if (event && event.target) {
+                event.target.classList.add('active');
+            }
+            
+            if (tab === 'overview') {
+                loadDashboardData();
+            } else if (tab === 'analytics') {
+                createSimpleAnalytics();
+            }
+        }
+
+        // ===============================================
+        // 🔔 SISTEMA DE NOTIFICACIONES
+        // ===============================================
+        function enableNotifications() {
+            if ('Notification' in window) {
+                Notification.requestPermission().then(permission => {
+                    if (permission === 'granted') {
+                        notificationsEnabled = true;
+                        document.getElementById('notificationStatus').innerHTML = 
+                            '🔔 <span style="color: green;">Notificaciones Activas</span>';
+                        showNotification('🎉 Sistema de Notificaciones', 'Notificaciones activadas correctamente');
+                    } else {
+                        showAlert('❌ Permisos denegados', 'Los permisos de notificación fueron denegados');
+                    }
+                });
+            } else {
+                showAlert('❌ No compatible', 'Tu navegador no soporta notificaciones');
+            }
+        }
+
+        function showNotification(title, message) {
+            if (!notificationsEnabled) return;
+
+            const notification = new Notification(title, {
+                body: message,
+                icon: '🚨'
+            });
+
+            if (reminderConfig.soundEnabled) {
+                playSuccessSound();
+            }
+
+            setTimeout(() => notification.close(), 5000);
+        }
+
+        function configureReminders() {
+            document.getElementById('remindersModal').style.display = 'block';
+        }
+
+        function closeRemindersModal() {
+            document.getElementById('remindersModal').style.display = 'none';
+        }
+
+        function startReminders() {
+            const frequency = parseInt(document.getElementById('reminderFrequency').value);
+            const plant = document.getElementById('reminderPlant').value;
+            const soundEnabled = document.getElementById('soundAlerts').checked;
+
+            reminderConfig = { frequency, plant, soundEnabled };
+
+            const baseMs = frequency * 60 * 60 * 1000;
+            const variation = baseMs * 0.25;
+            const randomMs = baseMs + (Math.random() - 0.5) * 2 * variation;
+
+            reminderInterval = setTimeout(() => {
+                sendRandomReminder();
+                startReminders();
+            }, randomMs);
+
+            const nextTime = new Date(Date.now() + randomMs).toLocaleTimeString('es-ES');
+            document.getElementById('remindersSection').style.display = 'block';
+            document.getElementById('remindersInfo').innerHTML = `
+                <p><strong>⏰ Configuración:</strong> Cada ~${frequency} hora(s)</p>
+                <p><strong>🏭 Planta:</strong> ${plant === 'both' ? 'Ambas (Aleatorio)' : plant.toUpperCase()}</p>
+                <p><strong>🔔 Próximo:</strong> ~${nextTime} (±variación)</p>
+            `;
+
+            closeRemindersModal();
+            showNotification('✅ Recordatorios Activados', `Configurados cada ~${frequency} hora(s)`);
+        }
+
+        function sendRandomReminder() {
+            const messages = [
+                '🕵️ Inspección Aleatoria',
+                '⚡ Ronda Flash', 
+                '🔍 Verificación Inesperada',
+                '🎲 Recorrido Sorpresa',
+                '👁️ Control de Vigilancia',
+                '🚨 Revisión Urgente'
+            ];
+
+            const plants = reminderConfig.plant === 'both' ? ['matriz', 'ekzotikart'] : [reminderConfig.plant];
+            const selectedPlant = plants[Math.floor(Math.random() * plants.length)];
+            const message = messages[Math.floor(Math.random() * messages.length)];
+            
+            showNotification(
+                `${message} - ${selectedPlant.toUpperCase()}`,
+                'Realizar recorrido inmediato en esta planta'
+            );
+        }
+
+        function stopReminders() {
+            if (reminderInterval) {
+                clearTimeout(reminderInterval);
+                reminderInterval = null;
+            }
+            document.getElementById('remindersSection').style.display = 'none';
+            showNotification('🛑 Recordatorios Desactivados', 'Sistema de recordatorios detenido');
+        }
+
+        // ===============================================
+        // 📊 ANÁLISIS SIMPLIFICADOS
+        // ===============================================
+        function createSimpleAnalytics() {
+            createTextTrends();
+            createTextComparison();
+            createSimpleHeatMap();
+        }
+
+        function createTextTrends() {
+            const incidents = JSON.parse(localStorage.getItem('incidents') || '[]');
+            const trendsContainer = document.getElementById('trendsChart');
+            
+            const last7Days = [];
+            const incidentCounts = [];
+            
+            for (let i = 6; i >= 0; i--) {
+                const date = new Date();
+                date.setDate(date.getDate() - i);
+                const dateStr = date.toISOString().split('T')[0];
+                last7Days.push(date.toLocaleDateString('es-ES', { weekday: 'short', day: 'numeric' }));
+                
+                const dayIncidents = incidents.filter(inc => 
+                    new Date(inc.timestamp).toISOString().split('T')[0] === dateStr
+                ).length;
+                
+                incidentCounts.push(dayIncidents);
+            }
+
+            let chartHTML = '<div style="background: white; padding: 20px; border-radius: 10px;">';
+            chartHTML += '<h4>📈 Incidencias por Día (Última Semana)</h4>';
+            
+            for (let i = 0; i < last7Days.length; i++) {
+                const width = incidentCounts[i] > 0 ? (incidentCounts[i] * 20) + 'px' : '5px';
+                chartHTML += `
+                    <div style="display: flex; align-items: center; margin: 5px 0;">
+                        <span style="width: 60px; font-size: 0.9rem;">${last7Days[i]}</span>
+                        <div style="background: #ff6384; height: 25px; width: ${width}; margin: 0 10px; border-radius: 3px;"></div>
+                        <span>${incidentCounts[i]}</span>
+                    </div>
+                `;
+            }
+            chartHTML += '</div>';
+            trendsContainer.innerHTML = chartHTML;
+        }
+
+        function createTextComparison() {
+            const rounds = JSON.parse(localStorage.getItem('rounds') || '[]');
+            const incidents = JSON.parse(localStorage.getItem('incidents') || '[]');
+            const plantsContainer = document.getElementById('plantsChart');
+            
+            const matrizRounds = rounds.filter(r => r.plant === 'matriz').length;
+            const ekzotikRounds = rounds.filter(r => r.plant === 'ekzotikart').length;
+            const matrizIncidents = incidents.filter(i => i.plant === 'matriz').length;
+            const ekzotikIncidents = incidents.filter(i => i.plant === 'ekzotikart').length;
+
+            const maxValue = Math.max(matrizRounds, ekzotikRounds, matrizIncidents, ekzotikIncidents);
+
+            let chartHTML = '<div style="background: white; padding: 20px; border-radius: 10px;">';
+            chartHTML += '<h4>🏭 Comparativo entre Plantas</h4>';
+            
+            chartHTML += '<div style="margin: 15px 0;"><strong>🏢 MATRIZ</strong></div>';
+            chartHTML += `
+                <div style="display: flex; align-items: center; margin: 5px 0;">
+                    <span style="width: 80px; font-size: 0.9rem;">Recorridos:</span>
+                    <div style="background: #36a2eb; height: 20px; width: ${maxValue > 0 ? (matrizRounds / maxValue * 200) : 5}px; margin: 0 10px; border-radius: 3px;"></div>
+                    <span>${matrizRounds}</span>
+                </div>
+                <div style="display: flex; align-items: center; margin: 5px 0;">
+                    <span style="width: 80px; font-size: 0.9rem;">Incidencias:</span>
+                    <div style="background: #ffce56; height: 20px; width: ${maxValue > 0 ? (matrizIncidents / maxValue * 200) : 5}px; margin: 0 10px; border-radius: 3px;"></div>
+                    <span>${matrizIncidents}</span>
+                </div>
+            `;
+            
+            chartHTML += '<div style="margin: 15px 0;"><strong>🏭 EKZOTIKART</strong></div>';
+            chartHTML += `
+                <div style="display: flex; align-items: center; margin: 5px 0;">
+                    <span style="width: 80px; font-size: 0.9rem;">Recorridos:</span>
+                    <div style="background: #36a2eb; height: 20px; width: ${maxValue > 0 ? (ekzotikRounds / maxValue * 200) : 5}px; margin: 0 10px; border-radius: 3px;"></div>
+                    <span>${ekzotikRounds}</span>
+                </div>
+                <div style="display: flex; align-items: center; margin: 5px 0;">
+                    <span style="width: 80px; font-size: 0.9rem;">Incidencias:</span>
+                    <div style="background: #ffce56; height: 20px; width: ${maxValue > 0 ? (ekzotikIncidents / maxValue * 200) : 5}px; margin: 0 10px; border-radius: 3px;"></div>
+                    <span>${ekzotikIncidents}</span>
+                </div>
+            `;
+            
+            chartHTML += '</div>';
+            plantsContainer.innerHTML = chartHTML;
+        }
+
+        function createSimpleHeatMap() {
+            const incidents = JSON.parse(localStorage.getItem('incidents') || '[]');
+            const heatMapEl = document.getElementById('heatMap');
+            
+            const locationCounts = {};
+            const allLocations = [...plantLocations.matriz, ...plantLocations.ekzotikart];
+            
+            allLocations.forEach(loc => {
+                locationCounts[loc.id] = incidents.filter(inc => inc.locationId === loc.id).length;
+            });
+
+            const maxCount = Math.max(...Object.values(locationCounts), 1);
+            
+            heatMapEl.innerHTML = Object.entries(locationCounts)
+                .sort((a, b) => b[1] - a[1])
+                .map(([locationId, count]) => {
+                    const location = allLocations.find(loc => loc.id === locationId);
+                    const intensity = count / maxCount;
+                    const opacity = Math.max(0.1, intensity);
+                    const bgColor = count > 0 ? `rgba(255, 99, 132, ${opacity})` : 'rgba(200, 200, 200, 0.1)';
+                    
+                    return `
+                        <div style="
+                            background: ${bgColor};
+                            border: 1px solid #ddd;
+                            border-radius: 5px;
+                            padding: 10px;
+                            margin: 5px 0;
+                            display: flex;
+                            justify-content: space-between;
+                            align-items: center;
+                        ">
+                            <span><strong>${location ? location.name : locationId}</strong></span>
+                            <span style="
+                                background: ${count > 2 ? '#ff4444' : count > 0 ? '#ffaa44' : '#44ff44'};
+                                color: white;
+                                padding: 2px 8px;
+                                border-radius: 12px;
+                                font-size: 0.8rem;
+                            ">${count}</span>
+                        </div>
+                    `;
+                }).join('');
+        }
+
+        // ===============================================
+        // 🔊 SONIDOS
+        // ===============================================
+        function playSuccessSound() {
+            if (!reminderConfig.soundEnabled) return;
+            
+            try {
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                
+                oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
+                gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+                
+                oscillator.start(audioContext.currentTime);
+                oscillator.stop(audioContext.currentTime + 0.3);
+            } catch (e) {
+                // Silenciar errores de audio
+            }
+        }
+        // ===============================================
+        // 📤 FUNCIONES DE EXPORTACIÓN
+        // ===============================================
+        function exportData() {
+            const rounds = JSON.parse(localStorage.getItem('rounds') || '[]');
+            const incidents = JSON.parse(localStorage.getItem('incidents') || '[]');
+            
+            let csvContent = "data:text/csv;charset=utf-8,";
+            csvContent += "Tipo,Fecha,Hora,Planta,Turno,Ubicacion,Descripcion,Observaciones\n";
+            
+            rounds.forEach(round => {
+                Object.keys(round.locations).forEach(locationId => {
+                    const location = round.locations[locationId];
+                    const fecha = new Date(round.startTime).toLocaleDateString('es-ES');
+                    const hora = new Date(round.startTime).toLocaleTimeString('es-ES');
+                    const observaciones = location.observations.map(obs => obs.text).join('; ') || 'Sin observaciones';
+                    
+                    csvContent += `Recorrido,"${fecha}","${hora}","${round.plant}","${round.turn}","${locationId}","Ubicacion visitada","${observaciones}"\n`;
+                });
+            });
+            
+            incidents.forEach(incident => {
+                const fecha = new Date(incident.timestamp).toLocaleDateString('es-ES');
+                const hora = new Date(incident.timestamp).toLocaleTimeString('es-ES');
+                
+                csvContent += `Incidencia,"${fecha}","${hora}","${incident.plant}","${incident.turn}","${incident.locationId}","${incident.incidentType || 'general'}","${incident.text}"\n`;
+            });
+            
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", `control_rondas_${new Date().toISOString().split('T')[0]}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            showAlert('✅ Exportación completa', 'Reporte exportado exitosamente');
+        }
+
+        function exportIncidents() {
+            const incidents = JSON.parse(localStorage.getItem('incidents') || '[]');
+            
+            if (incidents.length === 0) {
+                showAlert('⚠️ Sin datos', 'No hay incidencias para exportar');
+                return;
+            }
+            
+            let csvContent = "data:text/csv;charset=utf-8,";
+            csvContent += "Fecha,Hora,Planta,Turno,Ubicacion,Tipo,Descripcion,Foto\n";
+            
+            incidents.forEach(incident => {
+                const fecha = new Date(incident.timestamp).toLocaleDateString('es-ES');
+                const hora = new Date(incident.timestamp).toLocaleTimeString('es-ES');
+                
+                csvContent += `"${fecha}","${hora}","${incident.plant}","${incident.turn}","${incident.locationId}","${incident.incidentType || 'general'}","${incident.text}","${incident.hasPhoto ? 'Sí' : 'No'}"\n`;
+            });
+            
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", `incidencias_${new Date().toISOString().split('T')[0]}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            showAlert('✅ Incidencias exportadas', 'Incidencias exportadas exitosamente');
+        }
+
+        function exportAnalytics() {
+            const rounds = JSON.parse(localStorage.getItem('rounds') || '[]');
+            const incidents = JSON.parse(localStorage.getItem('incidents') || '[]');
+            
+            let csvContent = "data:text/csv;charset=utf-8,";
+            csvContent += "Tipo_Analisis,Planta,Ubicacion,Fecha,Cantidad,Descripcion\n";
+            
+            const allLocations = [...plantLocations.matriz, ...plantLocations.ekzotikart];
+            allLocations.forEach(location => {
+                const locationIncidents = incidents.filter(inc => inc.locationId === location.id);
+                const locationRounds = rounds.filter(round => 
+                    round.locations && round.locations[location.id]
+                );
+                
+                csvContent += `Ubicacion_Incidencias,"${location.id.includes('MTZ') ? 'matriz' : 'ekzotikart'}","${location.name}","${new Date().toLocaleDateString('es-ES')}","${locationIncidents.length}","Incidencias en ubicacion"\n`;
+                csvContent += `Ubicacion_Visitas,"${location.id.includes('MTZ') ? 'matriz' : 'ekzotikart'}","${location.name}","${new Date().toLocaleDateString('es-ES')}","${locationRounds.length}","Visitas a ubicacion"\n`;
+            });
+            
+            const incidentTypes = ['personas', 'seguridad', 'mantenimiento', 'materiales'];
+            incidentTypes.forEach(type => {
+                const typeIncidents = incidents.filter(inc => inc.incidentType === type);
+                csvContent += `Tipo_Incidencia,"Ambas","${type}","${new Date().toLocaleDateString('es-ES')}","${typeIncidents.length}","Incidencias tipo ${type}"\n`;
+            });
+            
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", `analisis_rondas_${new Date().toISOString().split('T')[0]}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            showAlert('✅ Análisis exportado', 'Análisis exportado exitosamente');
+        }
+
+        // ===============================================
+        // 🚨 DETECCIÓN DE INCIDENCIAS CRÍTICAS
+        // ===============================================
+        function checkCriticalIncident(incident) {
+            if (!notificationsEnabled) return;
+            
+            const incidents = JSON.parse(localStorage.getItem('incidents') || '[]');
+            
+            if (incident.incidentType === 'seguridad') {
+                showNotification(
+                    '🚨 INCIDENCIA CRÍTICA DE SEGURIDAD',
+                    `Ubicación: ${incident.locationId} - ${incident.text}`
+                );
+            }
+            
+            const sameLocationIncidents = incidents.filter(inc => 
+                inc.locationId === incident.locationId
+            ).length;
+            
+            if (sameLocationIncidents >= 3) {
+                showNotification(
+                    '⚠️ PATRÓN DE RIESGO DETECTADO',
+                    `${sameLocationIncidents} incidencias en ${incident.locationId}`
+                );
+            }
+        }
+
+        // ===============================================
+        // 🔄 FUNCIONES ADICIONALES DE MEJORA
+        // ===============================================
+        
+        // NUEVO: Validación de conectividad
+        function checkConnectivity() {
+            if (navigator.onLine) {
+                document.getElementById('connectionStatus').innerHTML = '🔥 Sistema completo activo';
+                document.getElementById('connectionStatus').className = 'connection-status status-active';
+            } else {
+                document.getElementById('connectionStatus').innerHTML = '⚠️ Modo offline - Datos se sincronizarán al conectarse';
+                document.getElementById('connectionStatus').className = 'connection-status status-offline';
+            }
+        }
+
+        // NUEVO: Función de respaldo automático
+        function autoBackup() {
+            const data = {
+                rounds: JSON.parse(localStorage.getItem('rounds') || '[]'),
+                incidents: JSON.parse(localStorage.getItem('incidents') || '[]'),
+                timestamp: new Date().toISOString(),
+                version: '2.0'
+            };
+            
+            const backup = JSON.stringify(data);
+            localStorage.setItem('backup_' + Date.now(), backup);
+            
+            console.log('💾 Respaldo automático creado');
+        }
+
+        // NUEVO: Validación de integridad de datos
+        function validateDataIntegrity() {
+            try {
+                const rounds = JSON.parse(localStorage.getItem('rounds') || '[]');
+                const incidents = JSON.parse(localStorage.getItem('incidents') || '[]');
+                
+                let isValid = true;
+                let errors = [];
+                
+                // Validar estructura de recorridos
+                rounds.forEach((round, index) => {
+                    if (!round.id || !round.plant || !round.startTime) {
+                        isValid = false;
+                        errors.push(`Recorrido ${index}: Datos incompletos`);
+                    }
+                });
+                
+                // Validar estructura de incidencias
+                incidents.forEach((incident, index) => {
+                    if (!incident.locationId || !incident.timestamp) {
+                        isValid = false;
+                        errors.push(`Incidencia ${index}: Datos incompletos`);
+                    }
+                });
+                
+                if (!isValid) {
+                    console.warn('⚠️ Problemas de integridad detectados:', errors);
+                    return false;
+                }
+                
+                console.log('✅ Integridad de datos verificada');
+                return true;
+                
+            } catch (error) {
+                console.error('❌ Error validando integridad:', error);
+                return false;
+            }
+        }
+
+        // NUEVO: Limpieza de datos antiguos
+        function cleanOldData() {
+            const MAX_ROUNDS = 100;
+            const MAX_INCIDENTS = 200;
+            
+            try {
+                let rounds = JSON.parse(localStorage.getItem('rounds') || '[]');
+                let incidents = JSON.parse(localStorage.getItem('incidents') || '[]');
+                
+                if (rounds.length > MAX_ROUNDS) {
+                    rounds = rounds.slice(-MAX_ROUNDS);
+                    localStorage.setItem('rounds', JSON.stringify(rounds));
+                    console.log(`🧹 Limpieza: Mantenidos últimos ${MAX_ROUNDS} recorridos`);
+                }
+                
+                if (incidents.length > MAX_INCIDENTS) {
+                    incidents = incidents.slice(-MAX_INCIDENTS);
+                    localStorage.setItem('incidents', JSON.stringify(incidents));
+                    console.log(`🧹 Limpieza: Mantenidas últimas ${MAX_INCIDENTS} incidencias`);
+                }
+                
+            } catch (error) {
+                console.error('❌ Error en limpieza de datos:', error);
+            }
+        }
+
+        // NUEVO: Sistema de logs
+        function logAction(action, details = '') {
+            const logEntry = {
+                timestamp: new Date().toISOString(),
+                action: action,
+                details: details,
+                plant: currentPlant || 'unknown',
+                turn: currentTurn || 'unknown'
+            };
+            
+            const logs = JSON.parse(localStorage.getItem('system_logs') || '[]');
+            logs.push(logEntry);
+            
+            // Mantener solo últimos 50 logs
+            if (logs.length > 50) {
+                logs.splice(0, logs.length - 50);
+            }
+            
+            localStorage.setItem('system_logs', JSON.stringify(logs));
+        }
+
+        // ===============================================
+        // 🔧 INICIALIZACIÓN Y EVENTOS
+        // ===============================================
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🚀 Iniciando Control de Rondas Corporativo v2.0');
+            updateCurrentTime();
+            setInterval(updateCurrentTime, 60000);
+        });
+
+        window.onclick = function(event) {
+            const observationModal = document.getElementById('observationModal');
+            const remindersModal = document.getElementById('remindersModal');
+            
+            if (event.target === observationModal) {
+                closeModal();
+            } else if (event.target === remindersModal) {
+                closeRemindersModal();
+            }
+        };
+
+        // ===============================================
+        // 🔧 INICIALIZACIÓN FINAL Y EVENTOS GLOBALES
+        // ===============================================
+        
+        // Inicialización completa del sistema - CORREGIDA
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🚀 Iniciando Control de Rondas Corporativo v2.0 - COMPLETO');
+            
+            // Verificar integridad de datos
+            validateDataIntegrity();
+            
+            // Limpiar datos antiguos
+            cleanOldData();
+            
+            // Verificar conectividad
+            checkConnectivity();
+            
+            // Configurar eventos de conectividad
+            window.addEventListener('online', checkConnectivity);
+            window.addEventListener('offline', checkConnectivity);
+            
+            // Respaldo automático cada 30 minutos
+            setInterval(autoBackup, 30 * 60 * 1000);
+            
+            // Log de inicio del sistema
+            logAction('SYSTEM_START', 'Sistema iniciado correctamente');
+            
+            // NUEVO: Verificar jsQR en background para diagnóstico
+            setTimeout(() => {
+                console.log('🔍 Verificación inicial de jsQR:', typeof jsQR);
+                if (typeof jsQR !== 'undefined') {
+                    console.log('✅ jsQR pre-cargado correctamente');
+                } else {
+                    console.log('⚠️ jsQR no pre-cargado, se cargará dinámicamente cuando sea necesario');
+                }
+            }, 2000);
+            
+            console.log('✅ Sistema completamente inicializado');
+        });
+
+        // Cleanup completo al cerrar
+        window.addEventListener('beforeunload', function() {
+            console.log('🛑 Cerrando sistema...');
+            
+            // Detener scanner QR
+            if (scanningActive) {
+                cancelQRScan();
+            }
+            
+            // Detener cámaras
+            if (cameraStream) {
+                cameraStream.getTracks().forEach(track => track.stop());
+            }
+            if (qrStream) {
+                qrStream.getTracks().forEach(track => track.stop());
+            }
+            
+            // Detener recordatorios
+            if (reminderInterval) {
+                clearTimeout(reminderInterval);
+            }
+            
+            // Detener timer de recorrido
+            if (roundTimer) {
+                clearInterval(roundTimer);
+            }
+            
+            // Log de cierre
+            logAction('SYSTEM_CLOSE', 'Sistema cerrado correctamente');
+            
+            console.log('🏁 Sistema cerrado completamente');
+        });
+
+        // ===============================================
+        // 🤖 PREPARACIÓN PARA IA (FUTURO)
+        // ===============================================
+        function detectRiskPatterns() {
+            console.log('🤖 Función de IA: detectRiskPatterns() - Pendiente de implementar');
+        }
+
+        function predictIncidents() {
+            console.log('🤖 Función de IA: predictIncidents() - Pendiente de implementar');
+        }
+
+        function suggestImprovements() {
+            console.log('🤖 Función de IA: suggestImprovements() - Pendiente de implementar');
+        }
+
+        function optimizeRoutes() {
+            console.log('🤖 Función de IA: optimizeRoutes() - Pendiente de implementar');
+        }
+
+        function generateInsights() {
+            console.log('🤖 Función de IA: generateInsights() - Pendiente de implementar');
+        }
+
+        console.log('📋 Control de Rondas Corporativo v2.0 - Cargado completamente');
+    </script>
+    
+    <!-- CORREGIDO: jsQR cargado con múltiples fallbacks -->
+    <script src="https://unpkg.com/jsqr@1.4.0/dist/jsQR.js" 
+            onerror="this.onerror=null; this.src='https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js';"
+            onload="console.log('📦 jsQR pre-cargado desde:', this.src);">
+    </script>
+</body>
+</html>
